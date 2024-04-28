@@ -5,11 +5,11 @@ import (
 	"net/http"
 )
 
-func HandleFoo(w http.ResponseWriter, r *http.Request) {
+func HandleFoo(w http.ResponseWriter, r *http.Request) error {
 	response := make(map[string]interface{})
 	response["message"] = "Hello, World!"
-	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 
-	json.NewEncoder(w).Encode(response)
+	return json.NewEncoder(w).Encode(response)
 }
