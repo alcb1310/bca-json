@@ -2,19 +2,37 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
+	"os"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/joho/godotenv"
+
+	"github.com/alcb1310/bca-json/internal/database"
+	"github.com/alcb1310/bca-json/internal/server"
 )
 
 func main() {
-	router := chi.NewRouter()
+	if err := godotenv.Load(); err != nil {
+		slog.Error("Error loading .env file", "error", err)
+	}
 
-	router.Get("/foo", handleFoo)
-	listenAddr := ":42069"
-	http.ListenAndServe(listenAddr, router)
-}
+	db := database.Connect()
+	if err := db.Health(); err != nil {
+		slog.Error("Error connecting to database", "error", err)
+		os.Exit(1)
+	}
+	slog.Info("Database connected")
 
-func handleFoo(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, World!")
+	if err := db.CreateSchema(); err != nil {
+		slog.Error("Error creating schema", "error", err)
+		os.Exit(1)
+	}
+	s := server.NewServer(db)
+
+	s.MountHandlers()
+	listenAddr := fmt.Sprintf(":%s", os.Getenv("PORT"))
+
+	slog.Info("Starting server on", "addr", listenAddr)
+	http.ListenAndServe(listenAddr, s.Router)
 }

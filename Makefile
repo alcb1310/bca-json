@@ -7,3 +7,9 @@ build:
 test:
 	@go clean -testcache
 	@go test ./... -cover
+
+cover: 
+	@go clean -testcache
+	@go test ./... -coverprofile=coverage.out
+	@go tool cover -html=coverage.out
+
