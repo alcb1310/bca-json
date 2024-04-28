@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/alcb1310/bca-json/internal/server"
-	utils_test "github.com/alcb1310/bca-json/internal/utils"
+	"github.com/alcb1310/bca-json/internal/utils_test"
 )
 
 func TestFoo(t *testing.T) {
