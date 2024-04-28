@@ -27,6 +27,12 @@ To confiure the application create a `.env` file in the root directory of the ap
 
 ```.env
 PORT=3000 # Port to listen on
+
+PGDATABASE=<database name> # Database name
+PGHOST=<database host> # Database host
+PGUSER=<database user> # Database user
+PGPASSWORD=<database password> # Database password
+PGPORT=<database port> # Database port
 ```
 
 ### Build
@@ -54,15 +60,7 @@ This is a simple budget control application that allows construction companys to
 
 ## Authors
 
-## Maintainers
-
-## Code of Conduct
-
 ## CI/CD
-
-## Documentation
-
-## Roadmap
 
 ## FAQ
 
