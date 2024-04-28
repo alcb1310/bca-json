@@ -23,5 +23,6 @@ func (s *Server) MountHandlers() {
 
 	s.Router.Get("/foo", utils.Make(handlers.HandleFoo))
 
-	s.Router.NotFound(handlers.HandleNotFound)
+	s.Router.NotFound(utils.Make(handlers.NotFound))
+	s.Router.MethodNotAllowed(utils.Make(handlers.MethodNotAllowed))
 }
