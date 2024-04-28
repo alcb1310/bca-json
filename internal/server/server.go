@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/alcb1310/bca-json/internal/handlers"
 )
@@ -17,5 +18,7 @@ func NewServer() *Server {
 }
 
 func (s *Server) MountHandlers() {
+	s.Router.Use(middleware.Logger)
+
 	s.Router.Get("/foo", handlers.HandleFoo)
 }
