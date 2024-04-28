@@ -8,6 +8,7 @@ import (
 
 	"github.com/joho/godotenv"
 
+	"github.com/alcb1310/bca-json/internal/database"
 	"github.com/alcb1310/bca-json/internal/server"
 )
 
@@ -16,7 +17,18 @@ func main() {
 		slog.Error("Error loading .env file", "error", err)
 	}
 
-	s := server.NewServer()
+	db := database.Connect()
+	if err := db.Health(); err != nil {
+		slog.Error("Error connecting to database", "error", err)
+		os.Exit(1)
+	}
+	slog.Info("Database connected")
+
+	if err := db.CreateSchema(); err != nil {
+		slog.Error("Error creating schema", "error", err)
+		os.Exit(1)
+	}
+	s := server.NewServer(db)
 
 	s.MountHandlers()
 	listenAddr := fmt.Sprintf(":%s", os.Getenv("PORT"))

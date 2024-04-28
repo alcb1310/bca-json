@@ -8,12 +8,14 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	"github.com/alcb1310/bca-json/internal/mocks"
 	"github.com/alcb1310/bca-json/internal/server"
 	"github.com/alcb1310/bca-json/internal/utils_test"
 )
 
 func TestFoo(t *testing.T) {
-	s := server.NewServer()
+	db := mocks.NewDatabaseMock()
+	s := server.NewServer(db)
 	s.MountHandlers()
 
 	t.Run("foo", func(t *testing.T) {

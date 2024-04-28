@@ -5,16 +5,19 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 
+	"github.com/alcb1310/bca-json/internal/database"
 	"github.com/alcb1310/bca-json/internal/utils"
 )
 
 type Server struct {
 	Router *chi.Mux
+	DB     database.Database
 }
 
-func NewServer() *Server {
+func NewServer(db database.Database) *Server {
 	return &Server{
 		Router: chi.NewRouter(),
+		DB:     db,
 	}
 }
 
