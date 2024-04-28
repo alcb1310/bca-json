@@ -1,11 +1,11 @@
-package handlers
+package server
 
 import (
 	"encoding/json"
 	"net/http"
 )
 
-func HandleFoo(w http.ResponseWriter, r *http.Request) error {
+func (s *Server) HandleFoo(w http.ResponseWriter, r *http.Request) error {
 	response := make(map[string]interface{})
 	response["message"] = "Hello, World!"
 	w.Header().Set("Content-Type", "application/json")
