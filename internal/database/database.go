@@ -7,7 +7,10 @@ import (
 	"os"
 	"strings"
 
+	"github.com/google/uuid"
 	_ "github.com/lib/pq"
+
+	"github.com/alcb1310/bca-json/internal/types"
 )
 
 type database struct {
@@ -17,6 +20,7 @@ type database struct {
 type Database interface {
 	Health() error
 	CreateSchema() error
+	Register(reg types.RegisterInformation) (uuid.UUID, error)
 }
 
 type config struct {

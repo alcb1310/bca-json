@@ -102,6 +102,50 @@ func (s *Server) HandleRegister(w http.ResponseWriter, r *http.Request) error {
 		return json.NewEncoder(w).Encode(errorResponse)
 	}
 
+	id, err := s.DB.Register(registerData)
+	if err != nil {
+		if strings.Contains(err.Error(), "violates unique constraint") {
+			if strings.Contains(err.Error(), "company_name_unique") {
+				slog.Error(fmt.Sprintf("Error: %v", err))
+				error := make(map[string]interface{})
+				error["field"] = "name"
+				error["message"] = "Ya existe una empresa con este nombre"
+				errorResponse["error"] = error
+
+				w.WriteHeader(http.StatusConflict)
+				return json.NewEncoder(w).Encode(errorResponse)
+			}
+
+			if strings.Contains(err.Error(), "company_ruc_unique") {
+				slog.Error(fmt.Sprintf("Error: %v", err))
+				error := make(map[string]interface{})
+				error["field"] = "ruc"
+				error["message"] = "Ya existe una empresa con este ruc"
+				errorResponse["error"] = error
+
+				w.WriteHeader(http.StatusConflict)
+				return json.NewEncoder(w).Encode(errorResponse)
+			}
+
+			if strings.Contains(err.Error(), "user_email_unique") {
+				slog.Error(fmt.Sprintf("Error: %v", err))
+				error := make(map[string]interface{})
+				error["field"] = "email"
+				error["message"] = "Ya existe un usuario con este correo"
+				errorResponse["error"] = error
+
+				w.WriteHeader(http.StatusConflict)
+				return json.NewEncoder(w).Encode(errorResponse)
+			}
+		}
+
+		slog.Error(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		return json.NewEncoder(w).Encode(err.Error())
+	}
+
+	_ = id
+
 	w.WriteHeader(201)
 
 	return json.NewEncoder(w).Encode(registerData)
