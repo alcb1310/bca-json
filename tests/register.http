@@ -1,0 +1,9 @@
+POST http://localhost:42069/register
+{
+    "ruc": "123456789",
+    "name": "test",
+    "employees": 5,
+    "email": "TqY0I@example.com",
+    "password": "123456",
+    "username": "Test User"
+}
