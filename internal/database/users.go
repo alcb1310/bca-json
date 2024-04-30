@@ -1,6 +1,8 @@
 package database
 
 import (
+	"errors"
+
 	"github.com/google/uuid"
 
 	"github.com/alcb1310/bca-json/internal/types"
@@ -35,4 +37,19 @@ func (d *database) Register(reg types.RegisterInformation) (uuid.UUID, error) {
 
 	tx.Commit()
 	return companyId, nil
+}
+
+func (d *database) Login(credentials types.CredentialsType) error {
+	var password string
+	sqlQuery := "SELECT password FROM public.user WHERE email = $1"
+
+	if err := d.DB.QueryRow(sqlQuery, credentials.Email).Scan(&password); err != nil {
+		return errors.New("Credenciales inválidas")
+	}
+
+	if err := utils.ComparePassword(password, credentials.Password); err != nil {
+		return errors.New("Credenciales inválidas")
+	}
+
+	return nil
 }

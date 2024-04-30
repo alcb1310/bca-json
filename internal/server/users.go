@@ -43,6 +43,14 @@ func (s *Server) HandleLogin(w http.ResponseWriter, r *http.Request) error {
 		return json.NewEncoder(w).Encode(errorResponse)
 	}
 
+	if err := s.DB.Login(credentials); err != nil {
+		error := make(map[string]interface{})
+		error["message"] = err.Error()
+		errorResponse["error"] = error
+		w.WriteHeader(http.StatusUnauthorized)
+		return json.NewEncoder(w).Encode(errorResponse)
+	}
+
 	w.WriteHeader(http.StatusOK)
 	return nil
 }

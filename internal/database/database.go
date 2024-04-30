@@ -20,7 +20,10 @@ type database struct {
 type Database interface {
 	Health() error
 	CreateSchema() error
+
+	// Users
 	Register(reg types.RegisterInformation) (uuid.UUID, error)
+	Login(credentials types.CredentialsType) error
 }
 
 type config struct {

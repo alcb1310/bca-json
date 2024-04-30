@@ -28,3 +28,8 @@ func (m *DatabaseMock) Register(reg types.RegisterInformation) (uuid.UUID, error
 	args := m.Called(reg)
 	return args.Get(0).(uuid.UUID), args.Error(1)
 }
+
+func (m *DatabaseMock) Login(credentials types.CredentialsType) error {
+	args := m.Called(credentials)
+	return args.Error(0)
+}

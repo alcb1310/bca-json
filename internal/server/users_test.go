@@ -2,6 +2,7 @@ package server_test
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http/httptest"
 	"strings"
 	"testing"
@@ -10,10 +11,16 @@ import (
 
 	"github.com/alcb1310/bca-json/internal/mocks"
 	"github.com/alcb1310/bca-json/internal/server"
+	"github.com/alcb1310/bca-json/internal/types"
 	"github.com/alcb1310/bca-json/internal/utils_test"
 )
 
 func TestUserLogin(t *testing.T) {
+	loginCredentials := types.CredentialsType{
+		Email:    "test@test.com",
+		Password: "password123",
+	}
+
 	t.Run("Should return 200 on POST /login", func(t *testing.T) {
 		db := mocks.NewDatabaseMock()
 		s := server.NewServer(db)
@@ -26,6 +33,8 @@ func TestUserLogin(t *testing.T) {
 		if err := json.NewEncoder(&buf).Encode(credentials); err != nil {
 			t.Fatal(err)
 		}
+
+		db.On("Login", loginCredentials).Return(nil)
 
 		request := httptest.NewRequest("POST", "/login", &buf)
 		response := utils_test.ExecuteRequest(request, s)
@@ -135,6 +144,37 @@ func TestUserLogin(t *testing.T) {
 				assert.Equal(t, "application/json", response.Header().Get("Content-Type"))
 				assert.Equal(t, string(errorString), strings.Trim(response.Body.String(), "\n"))
 			})
+		})
+	})
+
+	t.Run("Invalid Credentials", func(t *testing.T) {
+		db := mocks.NewDatabaseMock()
+		s := server.NewServer(db)
+		s.MountHandlers()
+
+		t.Run("Incorrect Email", func(t *testing.T) {
+			if err := json.NewEncoder(&buf).Encode(loginCredentials); err != nil {
+				t.Fatal(err)
+			}
+
+			db.On("Login", loginCredentials).Return(errors.New("Credenciales inválidas"))
+			request := httptest.NewRequest("POST", "/login", &buf)
+			response := utils_test.ExecuteRequest(request, s)
+
+			errorResponse := make(map[string]interface{})
+			error := make(map[string]interface{})
+			error["message"] = "Credenciales inválidas"
+			errorResponse["error"] = error
+
+			errorString, _ := json.Marshal(errorResponse)
+
+			assert.Equal(t, 401, response.Code)
+			assert.Equal(t, "application/json", response.Header().Get("Content-Type"))
+			assert.Equal(t, string(errorString), strings.Trim(response.Body.String(), "\n"))
+		})
+
+		t.Run("Incorrect Password", func(t *testing.T) {
+			t.Skip()
 		})
 	})
 }
