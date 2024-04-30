@@ -1,0 +1,6 @@
+POST http://localhost:42069/login
+
+{
+    "email": "TqY0I@example.com",
+    "password": "123456"
+}

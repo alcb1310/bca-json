@@ -1,6 +1,11 @@
 package mocks
 
-import "github.com/stretchr/testify/mock"
+import (
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/mock"
+
+	"github.com/alcb1310/bca-json/internal/types"
+)
 
 type DatabaseMock struct {
 	mock.Mock
@@ -17,4 +22,14 @@ func (m *DatabaseMock) Health() error {
 
 func (m *DatabaseMock) CreateSchema() error {
 	return nil
+}
+
+func (m *DatabaseMock) Register(reg types.RegisterInformation) (uuid.UUID, error) {
+	args := m.Called(reg)
+	return args.Get(0).(uuid.UUID), args.Error(1)
+}
+
+func (m *DatabaseMock) Login(credentials types.CredentialsType) error {
+	args := m.Called(credentials)
+	return args.Error(0)
 }

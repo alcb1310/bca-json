@@ -32,6 +32,8 @@ func (s *Server) MountHandlers() {
 	}))
 
 	s.Router.Get("/foo", utils.Make(s.HandleFoo))
+	s.Router.Post("/register", utils.Make(s.HandleRegister))
+	s.Router.Post("/login", utils.Make(s.HandleLogin))
 
 	s.Router.NotFound(utils.Make(NotFound))
 	s.Router.MethodNotAllowed(utils.Make(MethodNotAllowed))
