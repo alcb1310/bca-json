@@ -16,10 +16,14 @@ func New() *Server {
         Server: chiServer,
     }
 
+    // Middlewares
     s.Server.Use(middleware.Logger)
     s.Server.Use(middleware.CleanPath)
     s.Server.Use(middleware.StripSlashes)
+    s.Server.Use(middleware.AllowContentType("application/json"))
+    s.Server.Use(ContentTypeJSON)
 
+    // Routes
     s.Server.Get("/", handleErrors(Home))
 
     return s

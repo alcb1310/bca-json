@@ -1,6 +1,9 @@
 package server
 
-import "net/http"
+import (
+	"encoding/json"
+	"net/http"
+)
 
 type Handler  func(w http.ResponseWriter, r *http.Request) error
 
@@ -12,7 +15,18 @@ func handleErrors(h Handler) http.HandlerFunc {
 	}
 }
 
+func ContentTypeJSON(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Content-Type", "application/json")
+        next.ServeHTTP(w, r)
+    })
+}
+
 func Home(w http.ResponseWriter, r *http.Request) error {
-	_, err := w.Write([]byte("Hello, World!"))
+    res := map[string]string{
+        "message": "Hello World!",
+    }
+
+    err := json.NewEncoder(w).Encode(res)
 	return err
 }
