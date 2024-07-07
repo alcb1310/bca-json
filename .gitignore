@@ -1,3 +1,9 @@
+# Build directory
 build/
+
+# Temporary air files
+tmp/
+
+# Environment files
 .env
 .env.local
