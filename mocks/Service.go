@@ -17,6 +17,38 @@ func (_m *Service) EXPECT() *Service_Expecter {
 	return &Service_Expecter{mock: &_m.Mock}
 }
 
+// CreateTables provides a mock function with given fields:
+func (_m *Service) CreateTables() {
+	_m.Called()
+}
+
+// Service_CreateTables_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateTables'
+type Service_CreateTables_Call struct {
+	*mock.Call
+}
+
+// CreateTables is a helper method to define mock.On call
+func (_e *Service_Expecter) CreateTables() *Service_CreateTables_Call {
+	return &Service_CreateTables_Call{Call: _e.mock.On("CreateTables")}
+}
+
+func (_c *Service_CreateTables_Call) Run(run func()) *Service_CreateTables_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Service_CreateTables_Call) Return() *Service_CreateTables_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *Service_CreateTables_Call) RunAndReturn(run func()) *Service_CreateTables_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewService creates a new instance of Service. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewService(t interface {

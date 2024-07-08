@@ -17,6 +17,7 @@ func main() {
 	slog.Info("Starting BCA JSON API Server")
 
 	db := database.New()
+    db.CreateTables()
 	s := server.New(db)
 
 	port := os.Getenv("PORT")
