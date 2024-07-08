@@ -6,18 +6,23 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/alcb1310/bca-json/internals/server"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/joho/godotenv/autoload"
+
+	"github.com/alcb1310/bca-json/internals/database"
+	"github.com/alcb1310/bca-json/internals/server"
 )
 
-
 func main() {
-    s := server.New()
+	slog.Info("Starting BCA JSON API Server")
 
-    port := os.Getenv("PORT")
-    slog.Info("Starting server", "port", port)
+	db := database.New()
+	s := server.New(db)
 
-    if err := http.ListenAndServe(fmt.Sprintf(":%s", port), s.Server); err != nil {
-        panic(fmt.Sprintf("Failed to start server: %v", err))
-    }
+	port := os.Getenv("PORT")
+	slog.Info("Starting server", "port", port)
+
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), s.Server); err != nil {
+		panic(fmt.Sprintf("Failed to start server: %v", err))
+	}
 }
