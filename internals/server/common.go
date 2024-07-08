@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/json"
 	"net/http"
 )
 
@@ -20,13 +19,4 @@ func ContentTypeJSON(next http.Handler) http.Handler {
         w.Header().Set("Content-Type", "application/json")
         next.ServeHTTP(w, r)
     })
-}
-
-func Home(w http.ResponseWriter, r *http.Request) error {
-    res := map[string]string{
-        "message": "Hello World!",
-    }
-
-    err := json.NewEncoder(w).Encode(res)
-	return err
 }
