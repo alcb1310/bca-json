@@ -22,3 +22,8 @@
 | ***Variable*** | ***Type*** | ***Description*** |
 | :--- | :--- | :--- |
 | **PORT** | String | Port the application listens on |
+| **DB_HOST** | String | Database host address |
+| **DB_PORT** | String | Database port |
+| **DB_USER** | String | Database user name |
+| **DB_PASSWORD** | String | Database user password |
+| **DB_NAME** | String | Database name |
