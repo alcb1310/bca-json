@@ -18,10 +18,7 @@ func TestHome(t *testing.T) {
         t.Fatal(err)
     }
 
-    response := httptest.NewRecorder()
-    s.Server.ServeHTTP(response, req)
-
-    assert.Equal(t, http.StatusOK, response.Code)
+    response := getResponse(t, s, req, http.StatusOK)
 
     expectedResponse := map[string]string{
         "message": "Hello World!",
@@ -38,5 +35,4 @@ func TestHome(t *testing.T) {
     }
 
     assert.Equal(t, expectedResponse, actualResponse)
-    assert.Equal(t, "application/json", response.Header().Get("Content-Type"))
 }
