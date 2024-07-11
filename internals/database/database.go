@@ -8,11 +8,15 @@ import (
 	"os"
 	"strings"
 
+	"github.com/alcb1310/bca-json/internals/types"
 	_ "github.com/joho/godotenv/autoload"
 )
 
 type Service interface{
     CreateTables()
+
+    // Company methods
+    CreateCompany(company *types.Company, user *types.CreateUser) error
 }
 
 type service struct {
