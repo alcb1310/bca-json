@@ -5,8 +5,10 @@ import (
 )
 
 type CreateCompany struct {
-    Company
-    CreateUser
+	Company
+	Email    string `json:"email"`
+	UserName string `json:"user_name"`
+	Password string `json:"password"`
 }
 
 type Company struct {
@@ -28,4 +30,3 @@ type CreateUser struct {
 	User
 	Password string `json:"password"`
 }
-

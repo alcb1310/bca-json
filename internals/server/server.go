@@ -30,5 +30,9 @@ func New(db database.Service) *Server {
 	// Routes
 	s.Server.Get("/", handleErrors(Home))
 
+    s.Server.Route("/api/v2", func(r chi.Router) {
+        r.Post("/companies", handleErrors(s.CreateCompany))
+    })
+
 	return s
 }
