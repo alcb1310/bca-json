@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/alcb1310/bca-json/internals/types"
-	"github.com/alcb1310/bca-json/internals/utils"
 	"github.com/alcb1310/bca-json/internals/validation"
 )
 
@@ -26,7 +25,7 @@ func (s *Server) CreateCompany(w http.ResponseWriter, r *http.Request) error {
 
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
 		slog.Error("CreateCompany: Request body", "error", err)
-		return nil
+		return err
 	}
 
 	if err := validation.ValidateRuc(data.Ruc, true); err != nil {
@@ -64,7 +63,6 @@ func (s *Server) CreateCompany(w http.ResponseWriter, r *http.Request) error {
 			Code:    http.StatusBadRequest,
 			Message: err,
 		}
-
 		return e
 	} else {
 		user.Name = data.UserName
@@ -77,21 +75,18 @@ func (s *Server) CreateCompany(w http.ResponseWriter, r *http.Request) error {
 		}
 		return e
 	} else {
-		user.Password, err = utils.HashPassword(data.Password)
-		if err != nil {
-			d := &types.BCAError{
-				Code:    http.StatusInternalServerError,
-				Message: err,
-			}
-			return d
-		}
+		user.Password = data.Password
 	}
 
 	company.Employees = data.Employees
+    if company.Employees == 0 {
+        company.Employees = 1
+    }
 	company.IsActive = true
 	user.RoleID = "a"
 
-	if err := s.DB.CreateCompany(company, user); err != nil {
+    u, err := s.DB.CreateCompany(company, *user)
+	if err != nil {
 		e := &types.BCAError{
 			Code:    http.StatusInternalServerError,
 			Message: err,
@@ -101,7 +96,7 @@ func (s *Server) CreateCompany(w http.ResponseWriter, r *http.Request) error {
 
 	ret := map[string]interface{}{
 		"company": company,
-		"user":    user.User,
+		"user":    u,
 	}
 
 	if err := json.NewEncoder(w).Encode(ret); err != nil {

@@ -16,7 +16,7 @@ type Service interface{
     CreateTables()
 
     // Company methods
-    CreateCompany(company *types.Company, user *types.CreateUser) error
+    CreateCompany(company *types.Company, user types.CreateUser) (types.User, error)
 }
 
 type service struct {
