@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/alcb1310/bca-json/internals/types"
 	"github.com/alcb1310/bca-json/internals/validation"
@@ -79,13 +80,13 @@ func (s *Server) CreateCompany(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	company.Employees = data.Employees
-    if company.Employees == 0 {
-        company.Employees = 1
-    }
+	if company.Employees == 0 {
+		company.Employees = 1
+	}
 	company.IsActive = true
 	user.RoleID = "a"
 
-    u, err := s.DB.CreateCompany(company, *user)
+	u, err := s.DB.CreateCompany(company, *user)
 	if err != nil {
 		e := &types.BCAError{
 			Code:    http.StatusInternalServerError,
@@ -108,4 +109,50 @@ func (s *Server) CreateCompany(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	return nil
+}
+
+func (s *Server) Login(w http.ResponseWriter, r *http.Request) error {
+	data := &struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}{}
+
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		slog.Error("Login: Request body", "error", err)
+		return err
+	}
+
+	if err := validation.ValidateEmail(data.Email, true); err != nil {
+		e := &types.BCAError{
+			Code:    http.StatusBadRequest,
+			Message: err,
+		}
+		return e
+	}
+
+	if err := validation.ValidatePassword(data.Password, 3, true); err != nil {
+		e := &types.BCAError{
+			Code:    http.StatusBadRequest,
+			Message: err,
+		}
+		return e
+	}
+
+	u, err := s.DB.Login(data.Email, data.Password)
+	if err != nil {
+		e := &types.BCAError{
+			Code:    http.StatusUnauthorized,
+			Message: errors.New("Invalid credentials"),
+		}
+		return e
+	}
+	_, tokenString, _ := s.TokenAuth.Encode(map[string]interface{}{
+		"id":      u.ID,
+		"name":    u.Name,
+		"email":   u.Email,
+		"company": u.CompanyID,
+		"exp":     time.Now().Add(time.Hour * 24).Unix(),
+	})
+
+	return json.NewEncoder(w).Encode(map[string]string{"token": tokenString})
 }
