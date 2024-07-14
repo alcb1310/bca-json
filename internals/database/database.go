@@ -17,6 +17,7 @@ type Service interface{
 
     // Company methods
     CreateCompany(company *types.Company, user types.CreateUser) (types.User, error)
+    Login(email, password string) (types.User, error)
 }
 
 type service struct {

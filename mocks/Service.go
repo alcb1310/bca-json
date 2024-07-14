@@ -21,21 +21,31 @@ func (_m *Service) EXPECT() *Service_Expecter {
 }
 
 // CreateCompany provides a mock function with given fields: company, user
-func (_m *Service) CreateCompany(company *types.Company, user *types.CreateUser) error {
+func (_m *Service) CreateCompany(company *types.Company, user types.CreateUser) (types.User, error) {
 	ret := _m.Called(company, user)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateCompany")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(*types.Company, *types.CreateUser) error); ok {
+	var r0 types.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*types.Company, types.CreateUser) (types.User, error)); ok {
+		return rf(company, user)
+	}
+	if rf, ok := ret.Get(0).(func(*types.Company, types.CreateUser) types.User); ok {
 		r0 = rf(company, user)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(types.User)
 	}
 
-	return r0
+	if rf, ok := ret.Get(1).(func(*types.Company, types.CreateUser) error); ok {
+		r1 = rf(company, user)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // Service_CreateCompany_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateCompany'
@@ -45,24 +55,24 @@ type Service_CreateCompany_Call struct {
 
 // CreateCompany is a helper method to define mock.On call
 //   - company *types.Company
-//   - user *types.CreateUser
+//   - user types.CreateUser
 func (_e *Service_Expecter) CreateCompany(company interface{}, user interface{}) *Service_CreateCompany_Call {
 	return &Service_CreateCompany_Call{Call: _e.mock.On("CreateCompany", company, user)}
 }
 
-func (_c *Service_CreateCompany_Call) Run(run func(company *types.Company, user *types.CreateUser)) *Service_CreateCompany_Call {
+func (_c *Service_CreateCompany_Call) Run(run func(company *types.Company, user types.CreateUser)) *Service_CreateCompany_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(*types.Company), args[1].(*types.CreateUser))
+		run(args[0].(*types.Company), args[1].(types.CreateUser))
 	})
 	return _c
 }
 
-func (_c *Service_CreateCompany_Call) Return(_a0 error) *Service_CreateCompany_Call {
-	_c.Call.Return(_a0)
+func (_c *Service_CreateCompany_Call) Return(_a0 types.User, _a1 error) *Service_CreateCompany_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *Service_CreateCompany_Call) RunAndReturn(run func(*types.Company, *types.CreateUser) error) *Service_CreateCompany_Call {
+func (_c *Service_CreateCompany_Call) RunAndReturn(run func(*types.Company, types.CreateUser) (types.User, error)) *Service_CreateCompany_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -95,6 +105,63 @@ func (_c *Service_CreateTables_Call) Return() *Service_CreateTables_Call {
 }
 
 func (_c *Service_CreateTables_Call) RunAndReturn(run func()) *Service_CreateTables_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Login provides a mock function with given fields: email, password
+func (_m *Service) Login(email string, password string) (types.User, error) {
+	ret := _m.Called(email, password)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Login")
+	}
+
+	var r0 types.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string, string) (types.User, error)); ok {
+		return rf(email, password)
+	}
+	if rf, ok := ret.Get(0).(func(string, string) types.User); ok {
+		r0 = rf(email, password)
+	} else {
+		r0 = ret.Get(0).(types.User)
+	}
+
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(email, password)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// Service_Login_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Login'
+type Service_Login_Call struct {
+	*mock.Call
+}
+
+// Login is a helper method to define mock.On call
+//   - email string
+//   - password string
+func (_e *Service_Expecter) Login(email interface{}, password interface{}) *Service_Login_Call {
+	return &Service_Login_Call{Call: _e.mock.On("Login", email, password)}
+}
+
+func (_c *Service_Login_Call) Run(run func(email string, password string)) *Service_Login_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string), args[1].(string))
+	})
+	return _c
+}
+
+func (_c *Service_Login_Call) Return(_a0 types.User, _a1 error) *Service_Login_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Service_Login_Call) RunAndReturn(run func(string, string) (types.User, error)) *Service_Login_Call {
 	_c.Call.Return(run)
 	return _c
 }

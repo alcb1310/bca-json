@@ -1,6 +1,7 @@
 package database
 
 import (
+	"errors"
 	"log/slog"
 
 	"github.com/alcb1310/bca-json/internals/types"
@@ -31,10 +32,25 @@ func (s *service) CreateCompany(company *types.Company, user types.CreateUser) (
 		slog.Error("Error creating user", "error", err)
 		return types.User{}, err
 	}
+    user.CompanyID = company.ID
 
 	tx.Commit()
 	return user.User, nil
 }
-func (s *service) Login(email, password string) error {
-    return nil
+func (s *service) Login(email, password string) (types.User, error) {
+    var pass string
+    u := types.User{}
+
+    query := "SELECT id, email, name, company_id, password from \"user\" WHERE email = $1"
+    if err := s.DB.QueryRow(query, email).Scan(&u.ID, &u.Email, &u.Name, &u.CompanyID, &pass); err != nil {
+        slog.Error("Error querying user", "error", err)
+        return u, err
+    }
+
+    if !utils.CheckPasswordHash(password, pass){
+        err := errors.New("Wrong password")
+        slog.Error("Error comparing passwords", "error", err)
+        return types.User{}, err
+    }
+    return u, nil
 }

@@ -20,10 +20,11 @@ type Company struct {
 }
 
 type User struct {
-	ID     uuid.UUID `json:"id"`
-	Email  string    `json:"email"`
-	Name   string    `json:"name"`
-	RoleID string    `json:"role_id"`
+	ID        uuid.UUID `json:"id"`
+	Email     string    `json:"email"`
+	Name      string    `json:"name"`
+	RoleID    string    `json:"role_id"`
+	CompanyID uuid.UUID `json:"company_id"`
 }
 
 type CreateUser struct {
