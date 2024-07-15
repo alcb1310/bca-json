@@ -77,34 +77,104 @@ func (_c *Service_CreateCompany_Call) RunAndReturn(run func(*types.Company, type
 	return _c
 }
 
-// CreateTables provides a mock function with given fields:
-func (_m *Service) CreateTables() {
-	_m.Called()
+// GetRole provides a mock function with given fields: name
+func (_m *Service) GetRole(name string) (types.Role, error) {
+	ret := _m.Called(name)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetRole")
+	}
+
+	var r0 types.Role
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (types.Role, error)); ok {
+		return rf(name)
+	}
+	if rf, ok := ret.Get(0).(func(string) types.Role); ok {
+		r0 = rf(name)
+	} else {
+		r0 = ret.Get(0).(types.Role)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(name)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
-// Service_CreateTables_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateTables'
-type Service_CreateTables_Call struct {
+// Service_GetRole_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetRole'
+type Service_GetRole_Call struct {
 	*mock.Call
 }
 
-// CreateTables is a helper method to define mock.On call
-func (_e *Service_Expecter) CreateTables() *Service_CreateTables_Call {
-	return &Service_CreateTables_Call{Call: _e.mock.On("CreateTables")}
+// GetRole is a helper method to define mock.On call
+//   - name string
+func (_e *Service_Expecter) GetRole(name interface{}) *Service_GetRole_Call {
+	return &Service_GetRole_Call{Call: _e.mock.On("GetRole", name)}
 }
 
-func (_c *Service_CreateTables_Call) Run(run func()) *Service_CreateTables_Call {
+func (_c *Service_GetRole_Call) Run(run func(name string)) *Service_GetRole_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run()
+		run(args[0].(string))
 	})
 	return _c
 }
 
-func (_c *Service_CreateTables_Call) Return() *Service_CreateTables_Call {
-	_c.Call.Return()
+func (_c *Service_GetRole_Call) Return(_a0 types.Role, _a1 error) *Service_GetRole_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *Service_CreateTables_Call) RunAndReturn(run func()) *Service_CreateTables_Call {
+func (_c *Service_GetRole_Call) RunAndReturn(run func(string) (types.Role, error)) *Service_GetRole_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// LoadScript provides a mock function with given fields: fileName
+func (_m *Service) LoadScript(fileName string) error {
+	ret := _m.Called(fileName)
+
+	if len(ret) == 0 {
+		panic("no return value specified for LoadScript")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(fileName)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// Service_LoadScript_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LoadScript'
+type Service_LoadScript_Call struct {
+	*mock.Call
+}
+
+// LoadScript is a helper method to define mock.On call
+//   - fileName string
+func (_e *Service_Expecter) LoadScript(fileName interface{}) *Service_LoadScript_Call {
+	return &Service_LoadScript_Call{Call: _e.mock.On("LoadScript", fileName)}
+}
+
+func (_c *Service_LoadScript_Call) Run(run func(fileName string)) *Service_LoadScript_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string))
+	})
+	return _c
+}
+
+func (_c *Service_LoadScript_Call) Return(_a0 error) *Service_LoadScript_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Service_LoadScript_Call) RunAndReturn(run func(string) error) *Service_LoadScript_Call {
 	_c.Call.Return(run)
 	return _c
 }

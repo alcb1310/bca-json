@@ -14,7 +14,11 @@ func (s *service) CreateCompany(company *types.Company, user types.CreateUser) (
 		slog.Error("Error creating transaction", "error", err)
 		return types.User{}, err
 	}
-	defer tx.Rollback()
+	defer  func () {
+        if err := tx.Rollback(); err != nil {
+            slog.Error("Error rolling back transaction", "error", err)
+        }
+    }()
 
 	query := "INSERT INTO company (ruc, name, employees, is_active) VALUES ($1, $2, $3, $4) RETURNING id"
 	if err := tx.QueryRow(query, company.Ruc, company.Name, company.Employees, company.IsActive).Scan(&company.ID); err != nil {
@@ -34,7 +38,10 @@ func (s *service) CreateCompany(company *types.Company, user types.CreateUser) (
 	}
     user.CompanyID = company.ID
 
-	tx.Commit()
+    if err := tx.Commit(); err != nil {
+        slog.Error("Error commiting the transaction", "error", err)
+        return types.User{}, err
+    }
 	return user.User, nil
 }
 func (s *service) Login(email, password string) (types.User, error) {
