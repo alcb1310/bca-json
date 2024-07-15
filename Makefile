@@ -16,3 +16,7 @@ watch:
 unit-test:
 	@go clean -testcache
 	@go test `go list ./... | grep -v ./src/api | grep -v ./internals/database | grep -v ./mocks | grep -v ./tests | grep -v ./externals`
+
+integration-test:
+	@go clean -testcache
+	@go test ./tests/integration/...
