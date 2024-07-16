@@ -2,7 +2,6 @@ package validation
 
 import (
 	"errors"
-	"log/slog"
 	"strconv"
 )
 
@@ -25,7 +24,6 @@ func ValidateRuc(ruc string, required bool) error {
 		return errors.New("Invalid ID")
 	}
 
-	slog.Info("ValidateRuc", "ruc", ruc, "length", len(ruc))
 	switch len(ruc) {
 	case 10:
 		val := cedulaValidation(ruc[:10])

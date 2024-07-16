@@ -10,11 +10,16 @@ import (
 
 func (s *service) CreateCompany(company *types.Company, user types.CreateUser) (types.User, error) {
 	tx, err := s.DB.Begin()
+    commited := false
 	if err != nil {
 		slog.Error("Error creating transaction", "error", err)
 		return types.User{}, err
 	}
 	defer  func () {
+        if commited {
+            return
+        }
+
         if err := tx.Rollback(); err != nil {
             slog.Error("Error rolling back transaction", "error", err)
         }
@@ -42,6 +47,7 @@ func (s *service) CreateCompany(company *types.Company, user types.CreateUser) (
         slog.Error("Error commiting the transaction", "error", err)
         return types.User{}, err
     }
+    commited = true
 	return user.User, nil
 }
 func (s *service) Login(email, password string) (types.User, error) {

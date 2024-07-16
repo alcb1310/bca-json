@@ -1,7 +1,11 @@
 package integration
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -14,6 +18,7 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 
 	"github.com/alcb1310/bca-json/internals/database"
+	"github.com/alcb1310/bca-json/internals/server"
 )
 
 func TestRegisterCompany(t *testing.T) {
@@ -48,6 +53,7 @@ var _ = Describe("Client", Ordered, func() {
 				filepath.Join("..", "..", "scripts", "u000_role.sql"),
 			),
 		)
+
 		Expect(err).NotTo(HaveOccurred())
 
 		connString, err = c.ConnectionString(ctx)
@@ -63,9 +69,14 @@ var _ = Describe("Client", Ordered, func() {
 
 	When("fetching from the database", func() {
 		var testDB database.Service
+        var httpServer server.Server
+
 		BeforeAll(func() {
 			testDB = database.New(connString)
 			Expect(testDB).NotTo(BeNil())
+
+            httpServer = *server.New(testDB, "secret")
+			Expect(httpServer).NotTo(BeNil())
 		})
 
 		It("should successfully connect to the database", func() {
@@ -78,5 +89,47 @@ var _ = Describe("Client", Ordered, func() {
             Expect(strings.TrimSpace(r.ID)).To(Equal("a"))
             Expect(r.Name).To(Equal("admin"))
 		})
+
+        It("should be able to register a company", func ()  {
+			data := make(map[string]string)
+			data["ruc"] = "1791838300001"
+			data["name"] = "Company Name"
+			data["email"] = "a@b.c"
+			data["user_name"] = "alcb"
+			data["password"] = "albca"
+			var buf bytes.Buffer
+			err := json.NewEncoder(&buf).Encode(data)
+            Expect(err).To(BeNil())
+
+            req, err := http.NewRequest("POST", "/api/v2/companies", &buf)
+            Expect(err).To(BeNil())
+
+            req.Header.Set("Content-Type", "application/json")
+            rr := httptest.NewRecorder()
+            httpServer.Server.ServeHTTP(rr, req)
+            Expect(rr.Code).To(Equal(http.StatusCreated))
+
+            data = make(map[string]string)
+			data["email"] = "a@b.c"
+			data["password"] = "albca"
+			err = json.NewEncoder(&buf).Encode(data)
+            Expect(err).To(BeNil())
+
+            req, err = http.NewRequest("POST", "/api/v2/login", &buf)
+            Expect(err).To(BeNil())
+
+            req.Header.Set("Content-Type", "application/json")
+            rr = httptest.NewRecorder()
+            httpServer.Server.ServeHTTP(rr, req)
+            Expect(rr.Code).To(Equal(http.StatusOK))
+
+            token := struct {
+                Token string
+            }{}
+            err = json.Unmarshal(rr.Body.Bytes(), &token)
+            Expect(err).To(BeNil())
+
+            Expect(token.Token).NotTo(Equal(""))
+        })
 	})
 })

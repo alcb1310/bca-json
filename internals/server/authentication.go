@@ -100,15 +100,8 @@ func (s *Server) CreateCompany(w http.ResponseWriter, r *http.Request) error {
 		"user":    u,
 	}
 
-	if err := json.NewEncoder(w).Encode(ret); err != nil {
-		e := &types.BCAError{
-			Code:    http.StatusInternalServerError,
-			Message: err,
-		}
-		return e
-	}
-
-	return nil
+    w.WriteHeader(http.StatusCreated)
+	return json.NewEncoder(w).Encode(ret)
 }
 
 func (s *Server) Login(w http.ResponseWriter, r *http.Request) error {
@@ -154,5 +147,6 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) error {
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),
 	})
 
+    w.WriteHeader(http.StatusOK)
 	return json.NewEncoder(w).Encode(map[string]string{"token": tokenString})
 }

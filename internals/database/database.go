@@ -43,10 +43,11 @@ func New(connStr string) Service {
 }
 
 func (s *service) LoadScript(fileName string) error {
+	commited := false
 	data, err := os.OpenFile(fileName, os.O_RDONLY, 0644)
 	if err != nil {
 		slog.Error("Unable to open scripts file", "err", err)
-        return err
+		return err
 	}
 	defer data.Close()
 
@@ -54,7 +55,7 @@ func (s *service) LoadScript(fileName string) error {
 	bs := make([]byte, info.Size())
 	if _, err := bufio.NewReader(data).Read(bs); err != nil {
 		slog.Error("Unable to read file", "err", err)
-        return err
+		return err
 	}
 
 	queries := strings.Split(string(bs), ";")
@@ -62,35 +63,39 @@ func (s *service) LoadScript(fileName string) error {
 	tx, err := s.DB.Begin()
 	if err != nil {
 		slog.Error("Unable to create transaction", "err", err)
-        return err
+		return err
 	}
-	defer func (){
-        if err := tx.Rollback(); err != nil {
-            slog.Error("Error rolling back the transaction", "error", err)
-        }
-    }()
+	defer func() {
+		if commited {
+			return
+		}
+		if err := tx.Rollback(); err != nil {
+			slog.Error("Error rolling back the transaction", "error", err)
+		}
+	}()
 
 	for _, query := range queries {
 		if _, err := tx.Exec(query); err != nil {
 			slog.Error("Unable to create tables", "err", err)
-            return err
+			return err
 		}
 	}
 
 	if err := tx.Commit(); err != nil {
 		slog.Error("Unable to commit transaction", "err", err)
-        return err
+		return err
 	}
-    return nil
+	commited = true
+	return nil
 }
 
 func (s *service) GetRole(name string) (types.Role, error) {
-    r := types.Role{}
+	r := types.Role{}
 
-    query := "SELECT id, name FROM role WHERE name = $1"
-    if err := s.DB.QueryRow(query, name).Scan(&r.ID, &r.Name); err != nil {
-        return r, err
-    }
+	query := "SELECT id, name FROM role WHERE name = $1"
+	if err := s.DB.QueryRow(query, name).Scan(&r.ID, &r.Name); err != nil {
+		return r, err
+	}
 
-    return r, nil
+	return r, nil
 }

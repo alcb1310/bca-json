@@ -19,6 +19,7 @@ var (
     username = os.Getenv("DB_USER")
     password = os.Getenv("DB_PASSWORD")
     databaseName = os.Getenv("DB_NAME")
+    secret = os.Getenv("JWT_SECRET")
 )
 
 func main() {
@@ -30,7 +31,7 @@ func main() {
         os.Exit(1)
     }
     slog.Info("Tables created")
-	s := server.New(db)
+	s := server.New(db, secret)
 
 	port := os.Getenv("PORT")
 	slog.Info("Starting server", "port", port)

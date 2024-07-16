@@ -5,7 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"os"
 	"testing"
+
+	_ "github.com/joho/godotenv/autoload"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -18,7 +21,7 @@ import (
 func TestCreateCompany(t *testing.T) {
 	t.Run("Data validation", func(t *testing.T) {
 		t.Run("Empty body", func(t *testing.T) {
-			s := server.New(mocks.NewService(t))
+			s := server.New(mocks.NewService(t), os.Getenv("JWT_SECRET"))
 			if s == nil {
 				t.Fatal("Server should not be nil")
 			}
@@ -43,7 +46,7 @@ func TestCreateCompany(t *testing.T) {
 
 		t.Run("Should have company RUC", func(t *testing.T) {
 			t.Run("Empty RUC", func(t *testing.T) {
-				s := server.New(mocks.NewService(t))
+				s := server.New(mocks.NewService(t), os.Getenv("JWT_SECRET"))
 				if s == nil {
 					t.Fatal("Server should not be nil")
 				}
@@ -74,7 +77,7 @@ func TestCreateCompany(t *testing.T) {
 			})
 
 			t.Run("Invalid RUC", func(t *testing.T) {
-				s := server.New(mocks.NewService(t))
+				s := server.New(mocks.NewService(t), os.Getenv("JWT_SECRET"))
 				if s == nil {
 					t.Fatal("Server should not be nil")
 				}
@@ -108,7 +111,7 @@ func TestCreateCompany(t *testing.T) {
 
 		t.Run("Should have company name", func(t *testing.T) {
 			t.Run("Empty name", func(t *testing.T) {
-				s := server.New(mocks.NewService(t))
+				s := server.New(mocks.NewService(t), os.Getenv("JWT_SECRET"))
 				if s == nil {
 					t.Fatal("Server should not be nil")
 				}
@@ -140,7 +143,7 @@ func TestCreateCompany(t *testing.T) {
 			})
 
 			t.Run("Invalid name", func(t *testing.T) {
-				s := server.New(mocks.NewService(t))
+				s := server.New(mocks.NewService(t), os.Getenv("JWT_SECRET"))
 				if s == nil {
 					t.Fatal("Server should not be nil")
 				}
@@ -175,7 +178,7 @@ func TestCreateCompany(t *testing.T) {
 
 		t.Run("Should have a user email", func(t *testing.T) {
 			t.Run("Empty email", func(t *testing.T) {
-				s := server.New(mocks.NewService(t))
+				s := server.New(mocks.NewService(t), os.Getenv("JWT_SECRET"))
 				if s == nil {
 					t.Fatal("Server should not be nil")
 				}
@@ -208,8 +211,8 @@ func TestCreateCompany(t *testing.T) {
 			})
 
 			t.Run("Invalid email", func(t *testing.T) {
-				s := server.New(mocks.NewService(t))
-				if s == nil {
+				s := server.New(mocks.NewService(t), os.Getenv("JWT_SECRET"))
+                if s == nil {
 					t.Fatal("Server should not be nil")
 				}
 
@@ -244,7 +247,7 @@ func TestCreateCompany(t *testing.T) {
 
 		t.Run("Should have the user's name", func(t *testing.T) {
 			t.Run("empty name", func(t *testing.T) {
-				s := server.New(mocks.NewService(t))
+				s := server.New(mocks.NewService(t), os.Getenv("JWT_SECRET"))
 				if s == nil {
 					t.Fatal("Server should not be nil")
 				}
@@ -278,7 +281,7 @@ func TestCreateCompany(t *testing.T) {
 			})
 
 			t.Run("invalid name", func(t *testing.T) {
-				s := server.New(mocks.NewService(t))
+				s := server.New(mocks.NewService(t), os.Getenv("JWT_SECRET"))
 				if s == nil {
 					t.Fatal("Server should not be nil")
 				}
@@ -315,7 +318,7 @@ func TestCreateCompany(t *testing.T) {
 
 		t.Run("Should have the user's password", func(t *testing.T) {
 			t.Run("empty password", func(t *testing.T) {
-				s := server.New(mocks.NewService(t))
+				s := server.New(mocks.NewService(t), os.Getenv("JWT_SECRET"))
 				if s == nil {
 					t.Fatal("Server should not be nil")
 				}
@@ -350,7 +353,7 @@ func TestCreateCompany(t *testing.T) {
 			})
 
 			t.Run("invalid password", func(t *testing.T) {
-				s := server.New(mocks.NewService(t))
+				s := server.New(mocks.NewService(t), os.Getenv("JWT_SECRET"))
 				if s == nil {
 					t.Fatal("Server should not be nil")
 				}
@@ -415,7 +418,7 @@ func TestCreateCompany(t *testing.T) {
 				Password: data["password"],
 			}
 			db := mocks.NewService(t)
-			s := server.New(db)
+			s := server.New(db, os.Getenv("JWT_SECRET"))
 			if s == nil {
 				t.Fatal("Server should not be nil")
 			}
@@ -433,7 +436,7 @@ func TestCreateCompany(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			response := getResponse(t, s, req, http.StatusOK)
+			response := getResponse(t, s, req, http.StatusCreated)
 			var actualResponse map[string]interface{}
 			err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 			if err != nil {
@@ -450,7 +453,7 @@ func TestCreateCompany(t *testing.T) {
 func TestLogin(t *testing.T) {
 	t.Run("Data validation", func(t *testing.T) {
 		t.Run("Should have the user's email", func(t *testing.T) {
-			s := server.New(mocks.NewService(t))
+			s := server.New(mocks.NewService(t), os.Getenv("JWT_SECRET"))
 			if s == nil {
 				t.Fatal("Server should not be nil")
 			}
@@ -481,7 +484,7 @@ func TestLogin(t *testing.T) {
 		})
 
 		t.Run("Should have a valid email", func(t *testing.T) {
-			s := server.New(mocks.NewService(t))
+			s := server.New(mocks.NewService(t), os.Getenv("JWT_SECRET"))
 			if s == nil {
 				t.Fatal("Server should not be nil")
 			}
@@ -513,7 +516,7 @@ func TestLogin(t *testing.T) {
 		})
 
 		t.Run("Should have a password", func(t *testing.T) {
-			s := server.New(mocks.NewService(t))
+			s := server.New(mocks.NewService(t), os.Getenv("JWT_SECRET"))
 			if s == nil {
 				t.Fatal("Server should not be nil")
 			}
@@ -545,7 +548,7 @@ func TestLogin(t *testing.T) {
 		})
 
 		t.Run("Should have a valid password", func(t *testing.T) {
-			s := server.New(mocks.NewService(t))
+			s := server.New(mocks.NewService(t), os.Getenv("JWT_SECRET"))
 			if s == nil {
 				t.Fatal("Server should not be nil")
 			}
@@ -580,7 +583,7 @@ func TestLogin(t *testing.T) {
 
     t.Run("Invalid credentials", func(t *testing.T) {
         db :=mocks.NewService(t)
-        s := server.New(db)
+        s := server.New(db, os.Getenv("JWT_SECRET"))
         if s == nil {
             t.Fatal("Server should not be nil")
         }
