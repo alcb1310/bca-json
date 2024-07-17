@@ -26,3 +26,13 @@ func (s *service) GetUsers(companyID uuid.UUID) ([]types.User, error) {
 
 	return users, nil
 }
+
+func (s *service) GetUserByID(id uuid.UUID) (types.User, error) {
+    user := types.User{}
+    query := "SELECT id, email, name, role_id, company_id FROM \"user\" WHERE id = $1"
+    err := s.DB.QueryRow(query, id).Scan(&user.ID, &user.Email, &user.Name, &user.RoleID, &user.CompanyID)
+    if err != nil {
+        return types.User{}, err
+    }
+    return user, nil
+}

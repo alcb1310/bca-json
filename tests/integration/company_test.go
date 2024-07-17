@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
@@ -36,7 +35,6 @@ var _ = Describe("Company", Ordered, func() {
 	dbPassword := "testpassword"
 
 	BeforeAll(func() {
-		slog.Info("Company Suite")
 		ctx = context.Background()
 
 		c, err := postgres.Run(ctx,

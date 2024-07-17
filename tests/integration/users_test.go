@@ -5,12 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
 	"time"
 
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/testcontainers/testcontainers-go"
@@ -31,7 +31,6 @@ var _ = Describe("Users", Ordered, func() {
 	dbPassword := "testuser"
 
 	BeforeAll(func() {
-		slog.Info("Users Suite")
 		ctx = context.Background()
 		c, err := postgres.Run(ctx,
 			"docker.io/postgres:14-alpine",
@@ -102,12 +101,47 @@ var _ = Describe("Users", Ordered, func() {
 			rr := httptest.NewRecorder()
 			httpServer.Server.ServeHTTP(rr, req)
 			Expect(rr.Code).To(Equal(http.StatusOK))
-			slog.Info("users", "response", rr.Body)
 
 			var usersResponse []types.User
 			err = json.Unmarshal(rr.Body.Bytes(), &usersResponse)
 			Expect(err).To(BeNil())
 			Expect(len(usersResponse)).To(Equal(2))
+		})
+
+		It("should get the user by id", func() {
+			req, err := http.NewRequest("GET", "/api/v2/bca/users/0cd001ff-2c33-460b-8876-73e51dfb053e", nil)
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+			Expect(err).To(BeNil())
+
+			rr := httptest.NewRecorder()
+			httpServer.Server.ServeHTTP(rr, req)
+			Expect(rr.Code).To(Equal(http.StatusOK))
+
+			var user types.User
+			err = json.Unmarshal(rr.Body.Bytes(), &user)
+			Expect(err).To(BeNil())
+			Expect(user.ID).To(Equal(uuid.MustParse("0cd001ff-2c33-460b-8876-73e51dfb053e")))
+			Expect(user.Name).To(Equal("Another User"))
+			Expect(user.Email).To(Equal("a@b.c"))
+		})
+
+		It("should return 404 when user not found", func() {
+			req, err := http.NewRequest("GET", "/api/v2/bca/users/4cd001ff-2c33-460b-8876-73e51dfb053e", nil)
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+			Expect(err).To(BeNil())
+
+			rr := httptest.NewRecorder()
+			httpServer.Server.ServeHTTP(rr, req)
+			Expect(rr.Code).To(Equal(http.StatusNotFound))
+
+            errorResponse := struct {
+                Error string
+            }{}
+            err = json.Unmarshal(rr.Body.Bytes(), &errorResponse)
+            Expect(err).To(BeNil())
+            Expect(errorResponse.Error).To(Equal("User not found"))
 		})
 	})
 })
