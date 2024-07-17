@@ -23,7 +23,7 @@ type Service interface {
 
     // User methods
     GetUsers(companyID uuid.UUID) ([]types.User, error)
-    GetUserByID(id uuid.UUID) (types.User, error)
+    GetUserByID(id, companyID uuid.UUID) (types.User, error)
 }
 
 type service struct {

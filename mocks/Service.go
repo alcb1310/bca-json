@@ -135,9 +135,9 @@ func (_c *Service_GetRole_Call) RunAndReturn(run func(string) (types.Role, error
 	return _c
 }
 
-// GetUserByID provides a mock function with given fields: id
-func (_m *Service) GetUserByID(id uuid.UUID) (types.User, error) {
-	ret := _m.Called(id)
+// GetUserByID provides a mock function with given fields: id, companyID
+func (_m *Service) GetUserByID(id uuid.UUID, companyID uuid.UUID) (types.User, error) {
+	ret := _m.Called(id, companyID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetUserByID")
@@ -145,17 +145,17 @@ func (_m *Service) GetUserByID(id uuid.UUID) (types.User, error) {
 
 	var r0 types.User
 	var r1 error
-	if rf, ok := ret.Get(0).(func(uuid.UUID) (types.User, error)); ok {
-		return rf(id)
+	if rf, ok := ret.Get(0).(func(uuid.UUID, uuid.UUID) (types.User, error)); ok {
+		return rf(id, companyID)
 	}
-	if rf, ok := ret.Get(0).(func(uuid.UUID) types.User); ok {
-		r0 = rf(id)
+	if rf, ok := ret.Get(0).(func(uuid.UUID, uuid.UUID) types.User); ok {
+		r0 = rf(id, companyID)
 	} else {
 		r0 = ret.Get(0).(types.User)
 	}
 
-	if rf, ok := ret.Get(1).(func(uuid.UUID) error); ok {
-		r1 = rf(id)
+	if rf, ok := ret.Get(1).(func(uuid.UUID, uuid.UUID) error); ok {
+		r1 = rf(id, companyID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -170,13 +170,14 @@ type Service_GetUserByID_Call struct {
 
 // GetUserByID is a helper method to define mock.On call
 //   - id uuid.UUID
-func (_e *Service_Expecter) GetUserByID(id interface{}) *Service_GetUserByID_Call {
-	return &Service_GetUserByID_Call{Call: _e.mock.On("GetUserByID", id)}
+//   - companyID uuid.UUID
+func (_e *Service_Expecter) GetUserByID(id interface{}, companyID interface{}) *Service_GetUserByID_Call {
+	return &Service_GetUserByID_Call{Call: _e.mock.On("GetUserByID", id, companyID)}
 }
 
-func (_c *Service_GetUserByID_Call) Run(run func(id uuid.UUID)) *Service_GetUserByID_Call {
+func (_c *Service_GetUserByID_Call) Run(run func(id uuid.UUID, companyID uuid.UUID)) *Service_GetUserByID_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(uuid.UUID))
+		run(args[0].(uuid.UUID), args[1].(uuid.UUID))
 	})
 	return _c
 }
@@ -186,7 +187,7 @@ func (_c *Service_GetUserByID_Call) Return(_a0 types.User, _a1 error) *Service_G
 	return _c
 }
 
-func (_c *Service_GetUserByID_Call) RunAndReturn(run func(uuid.UUID) (types.User, error)) *Service_GetUserByID_Call {
+func (_c *Service_GetUserByID_Call) RunAndReturn(run func(uuid.UUID, uuid.UUID) (types.User, error)) *Service_GetUserByID_Call {
 	_c.Call.Return(run)
 	return _c
 }

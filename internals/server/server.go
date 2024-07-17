@@ -39,6 +39,7 @@ func New(db database.Service, secret string) *Server {
 
 		r.Route("/api/v2/bca", func(r chi.Router) {
 			r.Get("/users", handleErrors(s.GetUsers))
+            r.Get("/users/me", handleErrors(s.GetCurrentUser))
             r.Get("/users/{userID}", handleErrors(s.GetUserByID))
 		})
 	})

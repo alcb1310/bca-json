@@ -143,5 +143,23 @@ var _ = Describe("Users", Ordered, func() {
             Expect(err).To(BeNil())
             Expect(errorResponse.Error).To(Equal("User not found"))
 		})
+
+        It("should return the logged in user", func() {
+            req, err := http.NewRequest("GET", "/api/v2/bca/users/me", nil)
+            req.Header.Set("Content-Type", "application/json")
+            req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+            Expect(err).To(BeNil())
+
+            rr := httptest.NewRecorder()
+            httpServer.Server.ServeHTTP(rr, req)
+            Expect(rr.Code).To(Equal(http.StatusOK))
+
+            var user types.User
+            err = json.Unmarshal(rr.Body.Bytes(), &user)
+            Expect(err).To(BeNil())
+            Expect(user.ID).To(Equal(uuid.MustParse("0cd002ff-2c33-460b-8876-73e51dfb053e")))
+            Expect(user.Name).To(Equal("Test User"))
+            Expect(user.Email).To(Equal("test@test.com"))
+        })
 	})
 })
