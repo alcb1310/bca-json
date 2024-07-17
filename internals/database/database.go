@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/google/uuid"
 	_ "github.com/jackc/pgx/v5/stdlib"
 
 	"github.com/alcb1310/bca-json/internals/types"
@@ -19,6 +20,9 @@ type Service interface {
 	// Company methods
 	CreateCompany(company *types.Company, user types.CreateUser) (types.User, error)
 	Login(email, password string) (types.User, error)
+
+    // User methods
+    GetUsers(companyID uuid.UUID) ([]types.User, error)
 }
 
 type service struct {
