@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
@@ -120,6 +121,13 @@ func (s *Server) CreateUser(w http.ResponseWriter, r *http.Request) error {
 
     userResponse, err := s.DB.CreateUser(user)
     if err != nil {
+        if strings.Contains(err.Error(), "23505"){
+            return &types.BCAError{
+                Code:    http.StatusConflict,
+                Message: errors.New("User already exists"),
+            }
+        }
+
         return &types.BCAError{
             Code:    http.StatusInternalServerError,
             Message: err,

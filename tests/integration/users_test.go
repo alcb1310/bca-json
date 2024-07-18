@@ -161,5 +161,36 @@ var _ = Describe("Users", Ordered, func() {
             Expect(user.Name).To(Equal("Test User"))
             Expect(user.Email).To(Equal("test@test.com"))
         })
+
+        It("should create a user", func() {
+            req, err := http.NewRequest("POST", "/api/v2/bca/users", bytes.NewBuffer([]byte(`{"name": "Testing User", "email": "testing@test.com", "password": "test"}`)))
+            req.Header.Set("Content-Type", "application/json")
+            req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+            Expect(err).To(BeNil())
+
+            rr := httptest.NewRecorder()
+            httpServer.Server.ServeHTTP(rr, req)
+            Expect(rr.Code).To(Equal(http.StatusCreated))
+
+            var user types.User
+            var userResponse map[string]types.User
+            err = json.Unmarshal(rr.Body.Bytes(), &userResponse)
+            user = userResponse["user"]
+            Expect(err).To(BeNil())
+            Expect(user.ID).NotTo(BeNil())
+            Expect(user.Name).To(Equal("Testing User"))
+            Expect(user.Email).To(Equal("testing@test.com"))
+        })
+
+        It("should return 409 when user already exists", func() {
+            req, err := http.NewRequest("POST", "/api/v2/bca/users", bytes.NewBuffer([]byte(`{"name": "Test User", "email": "test@test.com", "password": "test"}`)))
+            req.Header.Set("Content-Type", "application/json")
+            req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+            Expect(err).To(BeNil())
+
+            rr := httptest.NewRecorder()
+            httpServer.Server.ServeHTTP(rr, req)
+            Expect(rr.Code).To(Equal(http.StatusConflict))
+        })
 	})
 })

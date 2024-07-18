@@ -45,7 +45,7 @@ func (s *service) CreateUser(user types.CreateUser) (types.User, error) {
 	}
 	user.Password = pass
 
-	query := "INSERT INTO \"user\" (email, password, name, role_id, company_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id"
+	query := "INSERT INTO \"user\" (email, password, name, role_id, company_id) VALUES ($1, $2, $3, $4, $5) RETURNING id"
 	if err := s.DB.
 		QueryRow(
 			query,
