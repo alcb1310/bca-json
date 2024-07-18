@@ -42,6 +42,7 @@ func New(db database.Service, secret string) *Server {
             r.Get("/users/me", handleErrors(s.GetCurrentUser))
             r.Get("/users/{userID}", handleErrors(s.GetUserByID))
             r.Post("/users", handleErrors(s.CreateUser))
+            r.Delete("/users/{userID}", handleErrors(s.DeleteUser))
 		})
 	})
 

@@ -140,3 +140,48 @@ func (s *Server) CreateUser(w http.ResponseWriter, r *http.Request) error {
     w.WriteHeader(http.StatusCreated)
     return json.NewEncoder(w).Encode(res)
 }
+
+func (s *Server) DeleteUser(w http.ResponseWriter, r *http.Request) error {
+    _, claims, _ := jwtauth.FromContext(r.Context())
+    companyUUID := uuid.MustParse(claims["company"].(string))
+	id := chi.URLParam(r, "userID")
+
+    parsedID, err := uuid.Parse(id)
+    if err != nil {
+        return &types.BCAError{
+            Code:    http.StatusBadRequest,
+            Message: err,
+        }
+    }
+
+    if uuid.MustParse(claims["id"].(string)) == parsedID {
+        return &types.BCAError{
+            Code:    http.StatusForbidden,
+            Message: errors.New("You can not delete yourself"),
+        }
+    }
+
+	user, err := s.DB.GetUserByID(parsedID, companyUUID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return &types.BCAError{
+				Code:    http.StatusNotFound,
+				Message: errors.New("User not found"),
+			}
+		}
+		return &types.BCAError{
+			Code:    http.StatusInternalServerError,
+			Message: err,
+		}
+	}
+
+    if err := s.DB.DeleteUser(user.ID, user.CompanyID); err != nil {
+        return &types.BCAError{
+            Code:    http.StatusInternalServerError,
+            Message: err,
+        }
+    }
+
+    w.WriteHeader(http.StatusNoContent)
+    return nil
+}

@@ -192,5 +192,38 @@ var _ = Describe("Users", Ordered, func() {
             httpServer.Server.ServeHTTP(rr, req)
             Expect(rr.Code).To(Equal(http.StatusConflict))
         })
+
+        It("should not allow to delete the logged in user", func() {
+            req, err := http.NewRequest("DELETE", "/api/v2/bca/users/0cd002ff-2c33-460b-8876-73e51dfb053e", nil)
+            req.Header.Set("Content-Type", "application/json")
+            req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+            Expect(err).To(BeNil())
+
+            rr := httptest.NewRecorder()
+            httpServer.Server.ServeHTTP(rr, req)
+            Expect(rr.Code).To(Equal(http.StatusForbidden))
+        })
+
+        It("should return 404 when user not found", func() {
+            req, err := http.NewRequest("DELETE", "/api/v2/bca/users/4cd001ff-2c33-460b-8876-73e51dfb053e", nil)
+            req.Header.Set("Content-Type", "application/json")
+            req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+            Expect(err).To(BeNil())
+
+            rr := httptest.NewRecorder()
+            httpServer.Server.ServeHTTP(rr, req)
+            Expect(rr.Code).To(Equal(http.StatusNotFound))
+        })
+
+        It("should delete a user", func() {
+            req, err := http.NewRequest("DELETE", "/api/v2/bca/users/0cd001ff-2c33-460b-8876-73e51dfb053e", nil)
+            req.Header.Set("Content-Type", "application/json")
+            req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+            Expect(err).To(BeNil())
+
+            rr := httptest.NewRecorder()
+            httpServer.Server.ServeHTTP(rr, req)
+            Expect(rr.Code).To(Equal(http.StatusNoContent))
+        })
 	})
 })

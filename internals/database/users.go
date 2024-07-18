@@ -65,3 +65,12 @@ func (s *service) CreateUser(user types.CreateUser) (types.User, error) {
 		CompanyID: user.CompanyID,
 	}, nil
 }
+
+func (s *service) DeleteUser(id, companyID uuid.UUID) error {
+    query := "DELETE FROM \"user\" WHERE id = $1 and company_id = $2"
+    _, err := s.DB.Exec(query, id, companyID)
+    if err != nil {
+        return err
+    }
+    return nil
+}
