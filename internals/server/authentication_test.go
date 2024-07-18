@@ -36,7 +36,7 @@ func TestCreateCompany(t *testing.T) {
 			}
 			var actualResponse map[string]string
 
-			response := getResponse(t, s, req, http.StatusBadRequest)
+			response := getResponse(t, s, req, http.StatusBadRequest, "")
 			err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 			if err != nil {
 				t.Fatal(err)
@@ -68,7 +68,7 @@ func TestCreateCompany(t *testing.T) {
 				}
 				var actualResponse map[string]string
 
-				response := getResponse(t, s, req, http.StatusBadRequest)
+				response := getResponse(t, s, req, http.StatusBadRequest, "")
 				err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 				if err != nil {
 					t.Fatal(err)
@@ -100,7 +100,7 @@ func TestCreateCompany(t *testing.T) {
 				}
 				var actualResponse map[string]string
 
-				response := getResponse(t, s, req, http.StatusBadRequest)
+				response := getResponse(t, s, req, http.StatusBadRequest, "")
 				err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 				if err != nil {
 					t.Fatal(err)
@@ -134,7 +134,7 @@ func TestCreateCompany(t *testing.T) {
 				}
 				var actualResponse map[string]string
 
-				response := getResponse(t, s, req, http.StatusBadRequest)
+				response := getResponse(t, s, req, http.StatusBadRequest, "")
 				err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 				if err != nil {
 					t.Fatal(err)
@@ -167,7 +167,7 @@ func TestCreateCompany(t *testing.T) {
 				}
 				var actualResponse map[string]string
 
-				response := getResponse(t, s, req, http.StatusBadRequest)
+				response := getResponse(t, s, req, http.StatusBadRequest, "")
 				err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 				if err != nil {
 					t.Fatal(err)
@@ -202,7 +202,7 @@ func TestCreateCompany(t *testing.T) {
 				}
 				var actualResponse map[string]string
 
-				response := getResponse(t, s, req, http.StatusBadRequest)
+				response := getResponse(t, s, req, http.StatusBadRequest, "")
 				err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 				if err != nil {
 					t.Fatal(err)
@@ -236,7 +236,7 @@ func TestCreateCompany(t *testing.T) {
 				}
 				var actualResponse map[string]string
 
-				response := getResponse(t, s, req, http.StatusBadRequest)
+				response := getResponse(t, s, req, http.StatusBadRequest, "")
 				err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 				if err != nil {
 					t.Fatal(err)
@@ -272,7 +272,7 @@ func TestCreateCompany(t *testing.T) {
 				}
 				var actualResponse map[string]string
 
-				response := getResponse(t, s, req, http.StatusBadRequest)
+				response := getResponse(t, s, req, http.StatusBadRequest, "")
 				err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 				if err != nil {
 					t.Fatal(err)
@@ -307,7 +307,7 @@ func TestCreateCompany(t *testing.T) {
 				}
 				var actualResponse map[string]string
 
-				response := getResponse(t, s, req, http.StatusBadRequest)
+				response := getResponse(t, s, req, http.StatusBadRequest, "")
 				err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 				if err != nil {
 					t.Fatal(err)
@@ -344,7 +344,7 @@ func TestCreateCompany(t *testing.T) {
 				}
 				var actualResponse map[string]string
 
-				response := getResponse(t, s, req, http.StatusBadRequest)
+				response := getResponse(t, s, req, http.StatusBadRequest, "")
 				err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 				if err != nil {
 					t.Fatal(err)
@@ -380,7 +380,7 @@ func TestCreateCompany(t *testing.T) {
 				}
 				var actualResponse map[string]string
 
-				response := getResponse(t, s, req, http.StatusBadRequest)
+				response := getResponse(t, s, req, http.StatusBadRequest, "")
 				err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 				if err != nil {
 					t.Fatal(err)
@@ -436,7 +436,7 @@ func TestCreateCompany(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			response := getResponse(t, s, req, http.StatusCreated)
+			response := getResponse(t, s, req, http.StatusCreated, "")
 			var actualResponse map[string]interface{}
 			err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 			if err != nil {
@@ -475,7 +475,7 @@ func TestLogin(t *testing.T) {
 			}
 			var actualResponse map[string]string
 
-			response := getResponse(t, s, req, http.StatusBadRequest)
+			response := getResponse(t, s, req, http.StatusBadRequest, "")
 			err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 			if err != nil {
 				t.Fatal(err)
@@ -507,7 +507,7 @@ func TestLogin(t *testing.T) {
 			}
 			var actualResponse map[string]string
 
-			response := getResponse(t, s, req, http.StatusBadRequest)
+			response := getResponse(t, s, req, http.StatusBadRequest, "")
 			err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 			if err != nil {
 				t.Fatal(err)
@@ -539,7 +539,7 @@ func TestLogin(t *testing.T) {
 			}
 			var actualResponse map[string]string
 
-			response := getResponse(t, s, req, http.StatusBadRequest)
+			response := getResponse(t, s, req, http.StatusBadRequest, "")
 			err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 			if err != nil {
 				t.Fatal(err)
@@ -572,7 +572,7 @@ func TestLogin(t *testing.T) {
 			}
 			var actualResponse map[string]string
 
-			response := getResponse(t, s, req, http.StatusBadRequest)
+			response := getResponse(t, s, req, http.StatusBadRequest, "")
 			err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 			if err != nil {
 				t.Fatal(err)
@@ -608,7 +608,7 @@ func TestLogin(t *testing.T) {
         }
         var actualResponse map[string]string
 
-        response := getResponse(t, s, req, http.StatusUnauthorized)
+        response := getResponse(t, s, req, http.StatusUnauthorized, "")
         err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
         if err != nil {
             t.Fatal(err)

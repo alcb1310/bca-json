@@ -79,6 +79,62 @@ func (_c *Service_CreateCompany_Call) RunAndReturn(run func(*types.Company, type
 	return _c
 }
 
+// CreateUser provides a mock function with given fields: user
+func (_m *Service) CreateUser(user types.CreateUser) (types.User, error) {
+	ret := _m.Called(user)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateUser")
+	}
+
+	var r0 types.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.CreateUser) (types.User, error)); ok {
+		return rf(user)
+	}
+	if rf, ok := ret.Get(0).(func(types.CreateUser) types.User); ok {
+		r0 = rf(user)
+	} else {
+		r0 = ret.Get(0).(types.User)
+	}
+
+	if rf, ok := ret.Get(1).(func(types.CreateUser) error); ok {
+		r1 = rf(user)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// Service_CreateUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateUser'
+type Service_CreateUser_Call struct {
+	*mock.Call
+}
+
+// CreateUser is a helper method to define mock.On call
+//   - user types.CreateUser
+func (_e *Service_Expecter) CreateUser(user interface{}) *Service_CreateUser_Call {
+	return &Service_CreateUser_Call{Call: _e.mock.On("CreateUser", user)}
+}
+
+func (_c *Service_CreateUser_Call) Run(run func(user types.CreateUser)) *Service_CreateUser_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.CreateUser))
+	})
+	return _c
+}
+
+func (_c *Service_CreateUser_Call) Return(_a0 types.User, _a1 error) *Service_CreateUser_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Service_CreateUser_Call) RunAndReturn(run func(types.CreateUser) (types.User, error)) *Service_CreateUser_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetRole provides a mock function with given fields: name
 func (_m *Service) GetRole(name string) (types.Role, error) {
 	ret := _m.Called(name)

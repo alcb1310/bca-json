@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/alcb1310/bca-json/internals/types"
+	"github.com/alcb1310/bca-json/internals/validation"
 )
 
 func (s *Server) GetUsers(w http.ResponseWriter, r *http.Request) error {
@@ -73,4 +74,61 @@ func (s *Server) GetCurrentUser(w http.ResponseWriter, r *http.Request) error {
 	user, _ := s.DB.GetUserByID(userUUID, companyUUID)
 	w.WriteHeader(http.StatusOK)
 	return json.NewEncoder(w).Encode(user)
+}
+
+func (s *Server) CreateUser(w http.ResponseWriter, r *http.Request) error {
+    if r.Body == nil {
+        return &types.BCAError{
+            Code:    http.StatusBadRequest,
+            Message: errors.New("Missing Body"),
+        }
+    }
+
+    var user types.CreateUser
+	_, claims, _ := jwtauth.FromContext(r.Context())
+
+	user.CompanyID = uuid.MustParse(claims["company"].(string))
+    user.RoleID = "a"
+    err := json.NewDecoder(r.Body).Decode(&user)
+    if err != nil {
+        return &types.BCAError{
+            Code:    http.StatusBadRequest,
+            Message: err,
+        }
+    }
+
+    if err := validation.ValidateEmail(user.Email, true); err != nil {
+        return &types.BCAError{
+            Code:    http.StatusBadRequest,
+            Message: err,
+        }
+    }
+
+    if err := validation.ValidatePassword(user.Password, 3, true); err != nil {
+        return &types.BCAError{
+            Code:    http.StatusBadRequest,
+            Message: err,
+        }
+    }
+
+    if err := validation.ValidateString(user.Name, 3, true); err != nil {
+        return &types.BCAError{
+            Code:    http.StatusBadRequest,
+            Message: err,
+        }
+    }
+
+    userResponse, err := s.DB.CreateUser(user)
+    if err != nil {
+        return &types.BCAError{
+            Code:    http.StatusInternalServerError,
+            Message: err,
+        }
+    }
+
+    res := map[string]types.User{
+        "user": userResponse,
+    }
+    w.WriteHeader(http.StatusCreated)
+    return json.NewEncoder(w).Encode(res)
 }

@@ -24,6 +24,7 @@ type Service interface {
     // User methods
     GetUsers(companyID uuid.UUID) ([]types.User, error)
     GetUserByID(id, companyID uuid.UUID) (types.User, error)
+    CreateUser(user types.CreateUser) (types.User, error)
 }
 
 type service struct {

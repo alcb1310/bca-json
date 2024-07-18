@@ -22,7 +22,7 @@ func TestHome(t *testing.T) {
         t.Fatal(err)
     }
 
-    response := getResponse(t, s, req, http.StatusOK)
+    response := getResponse(t, s, req, http.StatusOK, "")
 
     expectedResponse := map[string]string{
         "message": "Hello World!",
