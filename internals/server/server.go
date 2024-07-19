@@ -46,6 +46,10 @@ func New(db database.Service, secret string) *Server {
 				r.Delete("/{userID}", handleErrors(s.DeleteUser))
                 r.Put("/{userID}", handleErrors(s.UpdateUser))
 			})
+
+            r.Route("/projects", func(r chi.Router) {
+                r.Post("/", handleErrors(s.CreateProject))
+            })
 		})
 	})
 

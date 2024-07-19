@@ -79,6 +79,62 @@ func (_c *Service_CreateCompany_Call) RunAndReturn(run func(*types.Company, type
 	return _c
 }
 
+// CreateProject provides a mock function with given fields: project
+func (_m *Service) CreateProject(project types.Project) (types.Project, error) {
+	ret := _m.Called(project)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateProject")
+	}
+
+	var r0 types.Project
+	var r1 error
+	if rf, ok := ret.Get(0).(func(types.Project) (types.Project, error)); ok {
+		return rf(project)
+	}
+	if rf, ok := ret.Get(0).(func(types.Project) types.Project); ok {
+		r0 = rf(project)
+	} else {
+		r0 = ret.Get(0).(types.Project)
+	}
+
+	if rf, ok := ret.Get(1).(func(types.Project) error); ok {
+		r1 = rf(project)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// Service_CreateProject_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateProject'
+type Service_CreateProject_Call struct {
+	*mock.Call
+}
+
+// CreateProject is a helper method to define mock.On call
+//   - project types.Project
+func (_e *Service_Expecter) CreateProject(project interface{}) *Service_CreateProject_Call {
+	return &Service_CreateProject_Call{Call: _e.mock.On("CreateProject", project)}
+}
+
+func (_c *Service_CreateProject_Call) Run(run func(project types.Project)) *Service_CreateProject_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.Project))
+	})
+	return _c
+}
+
+func (_c *Service_CreateProject_Call) Return(_a0 types.Project, _a1 error) *Service_CreateProject_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Service_CreateProject_Call) RunAndReturn(run func(types.Project) (types.Project, error)) *Service_CreateProject_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // CreateUser provides a mock function with given fields: user
 func (_m *Service) CreateUser(user types.CreateUser) (types.User, error) {
 	ret := _m.Called(user)
