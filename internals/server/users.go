@@ -78,88 +78,88 @@ func (s *Server) GetCurrentUser(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (s *Server) CreateUser(w http.ResponseWriter, r *http.Request) error {
-    if r.Body == nil {
-        return &types.BCAError{
-            Code:    http.StatusBadRequest,
-            Message: errors.New("Missing Body"),
-        }
-    }
+	if r.Body == nil {
+		return &types.BCAError{
+			Code:    http.StatusBadRequest,
+			Message: errors.New("Missing Body"),
+		}
+	}
 
-    var user types.CreateUser
+	var user types.CreateUser
 	_, claims, _ := jwtauth.FromContext(r.Context())
 
 	user.CompanyID = uuid.MustParse(claims["company"].(string))
-    user.RoleID = "a"
-    err := json.NewDecoder(r.Body).Decode(&user)
-    if err != nil {
-        return &types.BCAError{
-            Code:    http.StatusBadRequest,
-            Message: err,
-        }
-    }
+	user.RoleID = "a"
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		return &types.BCAError{
+			Code:    http.StatusBadRequest,
+			Message: err,
+		}
+	}
 
-    if err := validation.ValidateEmail(user.Email, true); err != nil {
-        return &types.BCAError{
-            Code:    http.StatusBadRequest,
-            Message: err,
-        }
-    }
+	if err := validation.ValidateEmail(user.Email, true); err != nil {
+		return &types.BCAError{
+			Code:    http.StatusBadRequest,
+			Message: err,
+		}
+	}
 
-    if err := validation.ValidatePassword(user.Password, 3, true); err != nil {
-        return &types.BCAError{
-            Code:    http.StatusBadRequest,
-            Message: err,
-        }
-    }
+	if err := validation.ValidatePassword(user.Password, 3, true); err != nil {
+		return &types.BCAError{
+			Code:    http.StatusBadRequest,
+			Message: err,
+		}
+	}
 
-    if err := validation.ValidateString(user.Name, 3, true); err != nil {
-        return &types.BCAError{
-            Code:    http.StatusBadRequest,
-            Message: err,
-        }
-    }
+	if err := validation.ValidateString(user.Name, 3, true); err != nil {
+		return &types.BCAError{
+			Code:    http.StatusBadRequest,
+			Message: err,
+		}
+	}
 
-    userResponse, err := s.DB.CreateUser(user)
-    if err != nil {
-        if strings.Contains(err.Error(), "23505"){
-            return &types.BCAError{
-                Code:    http.StatusConflict,
-                Message: errors.New("User already exists"),
-            }
-        }
+	userResponse, err := s.DB.CreateUser(user)
+	if err != nil {
+		if strings.Contains(err.Error(), "23505") {
+			return &types.BCAError{
+				Code:    http.StatusConflict,
+				Message: errors.New("User already exists"),
+			}
+		}
 
-        return &types.BCAError{
-            Code:    http.StatusInternalServerError,
-            Message: err,
-        }
-    }
+		return &types.BCAError{
+			Code:    http.StatusInternalServerError,
+			Message: err,
+		}
+	}
 
-    res := map[string]types.User{
-        "user": userResponse,
-    }
-    w.WriteHeader(http.StatusCreated)
-    return json.NewEncoder(w).Encode(res)
+	res := map[string]types.User{
+		"user": userResponse,
+	}
+	w.WriteHeader(http.StatusCreated)
+	return json.NewEncoder(w).Encode(res)
 }
 
 func (s *Server) DeleteUser(w http.ResponseWriter, r *http.Request) error {
-    _, claims, _ := jwtauth.FromContext(r.Context())
-    companyUUID := uuid.MustParse(claims["company"].(string))
+	_, claims, _ := jwtauth.FromContext(r.Context())
+	companyUUID := uuid.MustParse(claims["company"].(string))
 	id := chi.URLParam(r, "userID")
 
-    parsedID, err := uuid.Parse(id)
-    if err != nil {
-        return &types.BCAError{
-            Code:    http.StatusBadRequest,
-            Message: err,
-        }
-    }
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		return &types.BCAError{
+			Code:    http.StatusBadRequest,
+			Message: err,
+		}
+	}
 
-    if uuid.MustParse(claims["id"].(string)) == parsedID {
-        return &types.BCAError{
-            Code:    http.StatusForbidden,
-            Message: errors.New("You can not delete yourself"),
-        }
-    }
+	if uuid.MustParse(claims["id"].(string)) == parsedID {
+		return &types.BCAError{
+			Code:    http.StatusForbidden,
+			Message: errors.New("You can not delete yourself"),
+		}
+	}
 
 	user, err := s.DB.GetUserByID(parsedID, companyUUID)
 	if err != nil {
@@ -175,13 +175,102 @@ func (s *Server) DeleteUser(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-    if err := s.DB.DeleteUser(user.ID, user.CompanyID); err != nil {
-        return &types.BCAError{
-            Code:    http.StatusInternalServerError,
-            Message: err,
-        }
-    }
+	if err := s.DB.DeleteUser(user.ID, user.CompanyID); err != nil {
+		return &types.BCAError{
+			Code:    http.StatusInternalServerError,
+			Message: err,
+		}
+	}
 
-    w.WriteHeader(http.StatusNoContent)
-    return nil
+	w.WriteHeader(http.StatusNoContent)
+	return nil
+}
+
+func (s *Server) UpdateUser(w http.ResponseWriter, r *http.Request) error {
+	var user types.CreateUser
+	_, claims, _ := jwtauth.FromContext(r.Context())
+	companyUUID, _ := uuid.Parse(claims["company"].(string))
+	id := chi.URLParam(r, "userID")
+
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		return &types.BCAError{
+			Code:    http.StatusBadRequest,
+			Message: err,
+		}
+	}
+
+	user.CompanyID = companyUUID
+	user.RoleID = "a"
+
+	if r.Body != nil {
+		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+			return &types.BCAError{
+				Code:    http.StatusBadRequest,
+				Message: err,
+			}
+		}
+	}
+
+	if err := validation.ValidateEmail(user.Email, false); err != nil {
+		return &types.BCAError{
+			Code:    http.StatusBadRequest,
+			Message: err,
+		}
+	}
+
+	if err := validation.ValidateString(user.Name, 3, false); err != nil {
+		return &types.BCAError{
+			Code:    http.StatusBadRequest,
+			Message: err,
+		}
+	}
+
+	if err := validation.ValidatePassword(user.Password, 3, false); err != nil {
+		return &types.BCAError{
+			Code:    http.StatusBadRequest,
+			Message: err,
+		}
+	}
+
+	currentUser, err := s.DB.GetUserByID(parsedID, companyUUID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return &types.BCAError{
+				Code:    http.StatusNotFound,
+				Message: errors.New("User not found"),
+			}
+		}
+		return &types.BCAError{
+			Code:    http.StatusInternalServerError,
+			Message: err,
+		}
+	}
+
+	if user.Email == "" {
+		user.Email = currentUser.Email
+	}
+
+	if user.Name == "" {
+		user.Name = currentUser.Name
+	}
+
+	if err := s.DB.UpdateUser(user); err != nil {
+		return &types.BCAError{
+			Code:    http.StatusInternalServerError,
+			Message: err,
+		}
+	}
+
+	userResponse := map[string]types.User{
+		"user": {
+			ID:        currentUser.ID,
+			Name:      user.Name,
+			Email:     user.Email,
+			RoleID:    user.RoleID,
+			CompanyID: user.CompanyID,
+		},
+	}
+	w.WriteHeader(http.StatusOK)
+	return json.NewEncoder(w).Encode(userResponse)
 }

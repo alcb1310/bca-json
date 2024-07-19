@@ -456,6 +456,52 @@ func (_c *Service_Login_Call) RunAndReturn(run func(string, string) (types.User,
 	return _c
 }
 
+// UpdateUser provides a mock function with given fields: user
+func (_m *Service) UpdateUser(user types.CreateUser) error {
+	ret := _m.Called(user)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateUser")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(types.CreateUser) error); ok {
+		r0 = rf(user)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// Service_UpdateUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateUser'
+type Service_UpdateUser_Call struct {
+	*mock.Call
+}
+
+// UpdateUser is a helper method to define mock.On call
+//   - user types.CreateUser
+func (_e *Service_Expecter) UpdateUser(user interface{}) *Service_UpdateUser_Call {
+	return &Service_UpdateUser_Call{Call: _e.mock.On("UpdateUser", user)}
+}
+
+func (_c *Service_UpdateUser_Call) Run(run func(user types.CreateUser)) *Service_UpdateUser_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(types.CreateUser))
+	})
+	return _c
+}
+
+func (_c *Service_UpdateUser_Call) Return(_a0 error) *Service_UpdateUser_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Service_UpdateUser_Call) RunAndReturn(run func(types.CreateUser) error) *Service_UpdateUser_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewService creates a new instance of Service. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewService(t interface {

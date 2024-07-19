@@ -74,3 +74,23 @@ func (s *service) DeleteUser(id, companyID uuid.UUID) error {
     }
     return nil
 }
+
+func (s *service) UpdateUser(user types.CreateUser) error {
+    if user.Password == "" {
+        query := "UPDATE \"user\" SET email = $1, name = $2 WHERE id = $3 and company_id = $4"
+        if _, err := s.DB.Exec(query, user.Email, user.Name, user.ID, user.CompanyID); err != nil {
+            return err
+        }
+        return nil
+    }
+
+    pass, err := utils.HashPassword(user.Password)
+    if err != nil {
+        return err
+    }
+    query := "UPDATE \"user\" SET email = $1, password = $2, name = $3 WHERE id = $4 and company_id = $5"
+    if _, err := s.DB.Exec(query, user.Email, pass, user.Name, user.ID, user.CompanyID); err != nil {
+        return err
+    }
+    return nil
+}

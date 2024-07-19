@@ -38,11 +38,14 @@ func New(db database.Service, secret string) *Server {
 		r.Use(jwtauth.Authenticator(s.TokenAuth))
 
 		r.Route("/api/v2/bca", func(r chi.Router) {
-			r.Get("/users", handleErrors(s.GetUsers))
-            r.Get("/users/me", handleErrors(s.GetCurrentUser))
-            r.Get("/users/{userID}", handleErrors(s.GetUserByID))
-            r.Post("/users", handleErrors(s.CreateUser))
-            r.Delete("/users/{userID}", handleErrors(s.DeleteUser))
+			r.Route("/users", func(r chi.Router) {
+				r.Get("/", handleErrors(s.GetUsers))
+				r.Post("/", handleErrors(s.CreateUser))
+				r.Get("/me", handleErrors(s.GetCurrentUser))
+				r.Get("/{userID}", handleErrors(s.GetUserByID))
+				r.Delete("/{userID}", handleErrors(s.DeleteUser))
+                r.Put("/{userID}", handleErrors(s.UpdateUser))
+			})
 		})
 	})
 
