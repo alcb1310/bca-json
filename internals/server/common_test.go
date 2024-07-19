@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -34,7 +33,6 @@ func getResponse(t *testing.T, s *server.Server, r *http.Request, code int, toke
 }
 
 func loginUser(t *testing.T) string {
-	slog.Error("Logging in user")
 	dataBase := mocks.NewService(t)
 	s := server.New(dataBase, "secret")
 	assert.NotNil(t, s)
@@ -60,7 +58,6 @@ func loginUser(t *testing.T) string {
 	assert.NoError(t, err)
 
 	response := getResponse(t, s, req, http.StatusOK, "")
-	slog.Info("Response", "response", response.Body, "code", response.Code)
 	var actualResponse map[string]string
 	err = json.Unmarshal(response.Body.Bytes(), &actualResponse)
 	assert.NoError(t, err)

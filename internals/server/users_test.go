@@ -18,7 +18,6 @@ import (
 var token string
 
 func TestCreateUser(t *testing.T) {
-	// TODO: implement
 	token = loginUser(t)
 
 	t.Run("Data validation", func(t *testing.T) {
@@ -251,6 +250,8 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestUpdateUser(t *testing.T) {
+	token = loginUser(t)
+
     t.Run("Invalid data", func(t *testing.T) {
         t.Run("Email", func(t *testing.T) {
             uuid := uuid.New()
