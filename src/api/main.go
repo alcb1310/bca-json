@@ -23,6 +23,31 @@ var (
 )
 
 func main() {
+    if host == "" {
+        slog.Error("DB_HOST is not set")
+        os.Exit(1)
+    }
+    if port == "" {
+        slog.Error("DB_PORT is not set")
+        os.Exit(1)
+    }
+    if username == "" {
+        slog.Error("DB_USER is not set")
+        os.Exit(1)
+    }
+    if password == "" {
+        slog.Error("DB_PASSWORD is not set")
+        os.Exit(1)
+    }
+    if databaseName == "" {
+        slog.Error("DB_NAME is not set")
+        os.Exit(1)
+    }
+    if secret == "" {
+        slog.Error("JWT_SECRET is not set")
+        os.Exit(1)
+    }
+
 	slog.Info("Starting BCA JSON API Server")
 
     connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", username, password, host, port, databaseName)
