@@ -136,16 +136,109 @@ var _ = Describe("Users", Ordered, func() {
 			httpServer.Server.ServeHTTP(rr, req)
 			Expect(rr.Code).To(Equal(http.StatusNotFound))
 
-            errorResponse := struct {
-                Error string
-            }{}
-            err = json.Unmarshal(rr.Body.Bytes(), &errorResponse)
-            Expect(err).To(BeNil())
-            Expect(errorResponse.Error).To(Equal("User not found"))
+			errorResponse := struct {
+				Error string
+			}{}
+			err = json.Unmarshal(rr.Body.Bytes(), &errorResponse)
+			Expect(err).To(BeNil())
+			Expect(errorResponse.Error).To(Equal("User not found"))
 		})
 
-        It("should return the logged in user", func() {
-            req, err := http.NewRequest("GET", "/api/v2/bca/users/me", nil)
+		It("should return the logged in user", func() {
+			req, err := http.NewRequest("GET", "/api/v2/bca/users/me", nil)
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+			Expect(err).To(BeNil())
+
+			rr := httptest.NewRecorder()
+			httpServer.Server.ServeHTTP(rr, req)
+			Expect(rr.Code).To(Equal(http.StatusOK))
+
+			var user types.User
+			err = json.Unmarshal(rr.Body.Bytes(), &user)
+			Expect(err).To(BeNil())
+			Expect(user.ID).To(Equal(uuid.MustParse("0cd002ff-2c33-460b-8876-73e51dfb053e")))
+			Expect(user.Name).To(Equal("Test User"))
+			Expect(user.Email).To(Equal("test@test.com"))
+		})
+
+		It("should create a user", func() {
+			req, err := http.NewRequest("POST", "/api/v2/bca/users", bytes.NewBuffer([]byte(`{"name": "Testing User", "email": "testing@test.com", "password": "test"}`)))
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+			Expect(err).To(BeNil())
+
+			rr := httptest.NewRecorder()
+			httpServer.Server.ServeHTTP(rr, req)
+			Expect(rr.Code).To(Equal(http.StatusCreated))
+
+			var user types.User
+			var userResponse map[string]types.User
+			err = json.Unmarshal(rr.Body.Bytes(), &userResponse)
+			user = userResponse["user"]
+			Expect(err).To(BeNil())
+			Expect(user.ID).NotTo(BeNil())
+			Expect(user.Name).To(Equal("Testing User"))
+			Expect(user.Email).To(Equal("testing@test.com"))
+		})
+
+		It("should return 409 when user already exists", func() {
+			req, err := http.NewRequest("POST", "/api/v2/bca/users", bytes.NewBuffer([]byte(`{"name": "Test User", "email": "test@test.com", "password": "test"}`)))
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+			Expect(err).To(BeNil())
+
+			rr := httptest.NewRecorder()
+			httpServer.Server.ServeHTTP(rr, req)
+			Expect(rr.Code).To(Equal(http.StatusConflict))
+		})
+
+		It("should not allow to delete the logged in user", func() {
+			req, err := http.NewRequest("DELETE", "/api/v2/bca/users/0cd002ff-2c33-460b-8876-73e51dfb053e", nil)
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+			Expect(err).To(BeNil())
+
+			rr := httptest.NewRecorder()
+			httpServer.Server.ServeHTTP(rr, req)
+			Expect(rr.Code).To(Equal(http.StatusForbidden))
+		})
+
+		It("should return 404 when user not found", func() {
+			req, err := http.NewRequest("DELETE", "/api/v2/bca/users/4cd001ff-2c33-460b-8876-73e51dfb053e", nil)
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+			Expect(err).To(BeNil())
+
+			rr := httptest.NewRecorder()
+			httpServer.Server.ServeHTTP(rr, req)
+			Expect(rr.Code).To(Equal(http.StatusNotFound))
+		})
+
+		It("should delete a user", func() {
+			req, err := http.NewRequest("DELETE", "/api/v2/bca/users/0cd001ff-2c33-460b-8876-73e51dfb053e", nil)
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+			Expect(err).To(BeNil())
+
+			rr := httptest.NewRecorder()
+			httpServer.Server.ServeHTTP(rr, req)
+			Expect(rr.Code).To(Equal(http.StatusNoContent))
+		})
+
+		It("should return 404 when trying to update a non existing user", func() {
+            req, err := http.NewRequest("PUT", "/api/v2/bca/users/4cd001ff-2c33-460b-8876-73e51dfb053e", nil)
+            req.Header.Set("Content-Type", "application/json")
+            req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+            Expect(err).To(BeNil())
+
+            rr := httptest.NewRecorder()
+            httpServer.Server.ServeHTTP(rr, req)
+            Expect(rr.Code).To(Equal(http.StatusNotFound))
+		})
+
+        It("should update a user", func() {
+            req, err := http.NewRequest("PUT", "/api/v2/bca/users/0cd002ff-2c33-460b-8876-73e51dfb053e", bytes.NewBuffer([]byte(`{"name": "Updated Test User", "email": "updatedtest@test.com", "password": "test"}`)))
             req.Header.Set("Content-Type", "application/json")
             req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
             Expect(err).To(BeNil())
@@ -155,75 +248,13 @@ var _ = Describe("Users", Ordered, func() {
             Expect(rr.Code).To(Equal(http.StatusOK))
 
             var user types.User
-            err = json.Unmarshal(rr.Body.Bytes(), &user)
-            Expect(err).To(BeNil())
-            Expect(user.ID).To(Equal(uuid.MustParse("0cd002ff-2c33-460b-8876-73e51dfb053e")))
-            Expect(user.Name).To(Equal("Test User"))
-            Expect(user.Email).To(Equal("test@test.com"))
-        })
-
-        It("should create a user", func() {
-            req, err := http.NewRequest("POST", "/api/v2/bca/users", bytes.NewBuffer([]byte(`{"name": "Testing User", "email": "testing@test.com", "password": "test"}`)))
-            req.Header.Set("Content-Type", "application/json")
-            req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
-            Expect(err).To(BeNil())
-
-            rr := httptest.NewRecorder()
-            httpServer.Server.ServeHTTP(rr, req)
-            Expect(rr.Code).To(Equal(http.StatusCreated))
-
-            var user types.User
             var userResponse map[string]types.User
             err = json.Unmarshal(rr.Body.Bytes(), &userResponse)
             user = userResponse["user"]
             Expect(err).To(BeNil())
             Expect(user.ID).NotTo(BeNil())
-            Expect(user.Name).To(Equal("Testing User"))
-            Expect(user.Email).To(Equal("testing@test.com"))
-        })
-
-        It("should return 409 when user already exists", func() {
-            req, err := http.NewRequest("POST", "/api/v2/bca/users", bytes.NewBuffer([]byte(`{"name": "Test User", "email": "test@test.com", "password": "test"}`)))
-            req.Header.Set("Content-Type", "application/json")
-            req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
-            Expect(err).To(BeNil())
-
-            rr := httptest.NewRecorder()
-            httpServer.Server.ServeHTTP(rr, req)
-            Expect(rr.Code).To(Equal(http.StatusConflict))
-        })
-
-        It("should not allow to delete the logged in user", func() {
-            req, err := http.NewRequest("DELETE", "/api/v2/bca/users/0cd002ff-2c33-460b-8876-73e51dfb053e", nil)
-            req.Header.Set("Content-Type", "application/json")
-            req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
-            Expect(err).To(BeNil())
-
-            rr := httptest.NewRecorder()
-            httpServer.Server.ServeHTTP(rr, req)
-            Expect(rr.Code).To(Equal(http.StatusForbidden))
-        })
-
-        It("should return 404 when user not found", func() {
-            req, err := http.NewRequest("DELETE", "/api/v2/bca/users/4cd001ff-2c33-460b-8876-73e51dfb053e", nil)
-            req.Header.Set("Content-Type", "application/json")
-            req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
-            Expect(err).To(BeNil())
-
-            rr := httptest.NewRecorder()
-            httpServer.Server.ServeHTTP(rr, req)
-            Expect(rr.Code).To(Equal(http.StatusNotFound))
-        })
-
-        It("should delete a user", func() {
-            req, err := http.NewRequest("DELETE", "/api/v2/bca/users/0cd001ff-2c33-460b-8876-73e51dfb053e", nil)
-            req.Header.Set("Content-Type", "application/json")
-            req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
-            Expect(err).To(BeNil())
-
-            rr := httptest.NewRecorder()
-            httpServer.Server.ServeHTTP(rr, req)
-            Expect(rr.Code).To(Equal(http.StatusNoContent))
+            Expect(user.Name).To(Equal("Updated Test User"))
+            Expect(user.Email).To(Equal("updatedtest@test.com"))
         })
 	})
 })
