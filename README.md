@@ -27,3 +27,24 @@
 | **DB_USER** | String | Database user name |
 | **DB_PASSWORD** | String | Database user password |
 | **DB_NAME** | String | Database name |
+| **JWT_SECRET** | String | JWT secret key |
+
+## Routes
+
+### Unauthenticated Routes
+
+| ***Route*** | ***Method*** | ***Description*** |
+| :--- | :--- | :--- |
+| **/api/v2/companies* | POST | Register a new company |
+| **/api/v2/login** | POST | Login a user |
+
+### Authenticated Routes
+
+| ***Route*** | ***Method*** | ***Description*** |
+| :--- | :--- | :--- |
+| **/api/vw2/bca/users** | GET | Get all users |
+| **/api/vw2/bca/users** | POST | Create a new user |
+| **/api/vw2/bca/users/me** | GET | Get the current user |
+| **/api/vw2/bca/users/{id}** | GET | Get a user |
+| **/api/vw2/bca/users/{id}** | PUT | Update a user |
+| **/api/vw2/bca/users/{id}** | DELETE | Delete a user |

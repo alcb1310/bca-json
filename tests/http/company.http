@@ -1,0 +1,10 @@
+POST http://localhost:8081/api/v2/companies
+Content-Type: application/json
+
+{
+    "ruc": "1791838300001",
+    "name": "test",
+    "email": "test@test.com",
+    "user_name": "testing",
+    "password": "test"
+}
