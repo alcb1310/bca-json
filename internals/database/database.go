@@ -30,6 +30,7 @@ type Service interface {
 
     // Project methods
     GetProjects(companyID uuid.UUID) ([]types.Project, error)
+    GetProjectByID(id, companyID uuid.UUID) (types.Project, error)
     CreateProject(project types.Project) (types.Project, error)
 }
 

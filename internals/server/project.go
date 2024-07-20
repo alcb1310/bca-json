@@ -1,11 +1,13 @@
 package server
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"strings"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/google/uuid"
 
@@ -108,4 +110,44 @@ func (s *Server) GetProjects(w http.ResponseWriter, r *http.Request) error {
 
     w.WriteHeader(http.StatusOK)
     return json.NewEncoder(w).Encode(responseProjects)
+}
+
+func (s *Server) GetProjectByID(w http.ResponseWriter, r *http.Request) error {
+    _, claims, _ := jwtauth.FromContext(r.Context())
+    if claims == nil {
+        return &types.BCAError{
+            Code:    http.StatusUnauthorized,
+            Message: errors.New("Unauthorized"),
+        }
+    }
+
+    companyUUID := uuid.MustParse(claims["company"].(string))
+    id := chi.URLParam(r, "projectID")
+    projectUUID, err := uuid.Parse(id)
+    if err != nil {
+        return &types.BCAError{
+            Code:    http.StatusBadRequest,
+            Message: err,
+        }
+    }
+
+    responseProject, err := s.DB.GetProjectByID(projectUUID, companyUUID)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return &types.BCAError{
+                Code:    http.StatusNotFound,
+                Message: errors.New("Project not found"),
+            }
+        }
+        return &types.BCAError{
+            Code:    http.StatusInternalServerError,
+            Message: err,
+        }
+    }
+
+    res := map[string]types.Project{
+        "project": responseProject,
+    }
+    w.WriteHeader(http.StatusOK)
+    return json.NewEncoder(w).Encode(res)
 }

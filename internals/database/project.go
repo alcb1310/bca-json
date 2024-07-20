@@ -33,3 +33,13 @@ func (s *service) CreateProject(project types.Project) (types.Project, error) {
 
     return project, nil
 }
+
+func (s *service) GetProjectByID(id, companyID uuid.UUID) (types.Project, error) {
+    query := "SELECT id, name, is_active, gross_area, net_area, company_id FROM project WHERE id = $1 AND company_id = $2"
+    row := s.DB.QueryRow(query, id, companyID)
+    project := types.Project{}
+    if err := row.Scan(&project.ID, &project.Name, &project.IsActive, &project.GrossArea, &project.NetArea, &project.CompanyID); err != nil {
+        return types.Project{}, err
+    }
+    return project, nil
+}

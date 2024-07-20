@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/testcontainers/testcontainers-go"
@@ -20,6 +21,8 @@ import (
 	"github.com/alcb1310/bca-json/internals/server"
 	"github.com/alcb1310/bca-json/internals/types"
 )
+
+var companyID = uuid.MustParse("4b114c26-b038-4cfa-ae6e-ad46c73ef59d")
 
 var _ = Describe("Projects", Ordered, func() {
 	var container testcontainers.Container
@@ -110,6 +113,37 @@ var _ = Describe("Projects", Ordered, func() {
             err = json.Unmarshal(rr.Body.Bytes(), &projectsResponse)
             Expect(err).To(BeNil())
             Expect(len(projectsResponse)).To(Equal(3))
+        })
+
+        It("should get a project", func() {
+            req, err := http.NewRequest("GET", "/api/v2/bca/projects/bcf847df-f415-469e-ae67-dfac273b0e82", nil)
+            req.Header.Set("Content-Type", "application/json")
+            req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+            Expect(err).To(BeNil())
+
+            rr := httptest.NewRecorder()
+            httpServer.Server.ServeHTTP(rr, req)
+            Expect(rr.Code).To(Equal(http.StatusOK))
+
+            var projectResponse map[string]types.Project
+            err = json.Unmarshal(rr.Body.Bytes(), &projectResponse)
+            Expect(err).To(BeNil())
+            Expect(projectResponse["project"].ID).NotTo(BeNil())
+            Expect(projectResponse["project"].Name).To(Equal("Project 1"))
+            Expect(projectResponse["project"].GrossArea).To(Equal(100.50))
+            Expect(projectResponse["project"].NetArea).To(Equal(50.25))
+            Expect(projectResponse["project"].CompanyID).To(Equal(companyID))
+        })
+
+        It("should return not found when getting a project that does not exist", func() {
+            req, err := http.NewRequest("GET", "/api/v2/bca/projects/00000000-0000-0000-0000-000000000000", nil)
+            req.Header.Set("Content-Type", "application/json")
+            req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+            Expect(err).To(BeNil())
+
+            rr := httptest.NewRecorder()
+            httpServer.Server.ServeHTTP(rr, req)
+            Expect(rr.Code).To(Equal(http.StatusNotFound))
         })
 
 		It("should create a project", func() {
