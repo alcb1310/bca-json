@@ -29,6 +29,7 @@ type Service interface {
     UpdateUser(user types.CreateUser) error
 
     // Project methods
+    GetProjects(companyID uuid.UUID) ([]types.Project, error)
     CreateProject(project types.Project) (types.Project, error)
 }
 

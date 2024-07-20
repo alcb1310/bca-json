@@ -238,6 +238,64 @@ func (_c *Service_DeleteUser_Call) RunAndReturn(run func(uuid.UUID, uuid.UUID) e
 	return _c
 }
 
+// GetProjects provides a mock function with given fields: companyID
+func (_m *Service) GetProjects(companyID uuid.UUID) ([]types.Project, error) {
+	ret := _m.Called(companyID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetProjects")
+	}
+
+	var r0 []types.Project
+	var r1 error
+	if rf, ok := ret.Get(0).(func(uuid.UUID) ([]types.Project, error)); ok {
+		return rf(companyID)
+	}
+	if rf, ok := ret.Get(0).(func(uuid.UUID) []types.Project); ok {
+		r0 = rf(companyID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]types.Project)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(uuid.UUID) error); ok {
+		r1 = rf(companyID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// Service_GetProjects_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetProjects'
+type Service_GetProjects_Call struct {
+	*mock.Call
+}
+
+// GetProjects is a helper method to define mock.On call
+//   - companyID uuid.UUID
+func (_e *Service_Expecter) GetProjects(companyID interface{}) *Service_GetProjects_Call {
+	return &Service_GetProjects_Call{Call: _e.mock.On("GetProjects", companyID)}
+}
+
+func (_c *Service_GetProjects_Call) Run(run func(companyID uuid.UUID)) *Service_GetProjects_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(uuid.UUID))
+	})
+	return _c
+}
+
+func (_c *Service_GetProjects_Call) Return(_a0 []types.Project, _a1 error) *Service_GetProjects_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Service_GetProjects_Call) RunAndReturn(run func(uuid.UUID) ([]types.Project, error)) *Service_GetProjects_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetRole provides a mock function with given fields: name
 func (_m *Service) GetRole(name string) (types.Role, error) {
 	ret := _m.Called(name)

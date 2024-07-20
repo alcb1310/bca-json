@@ -48,6 +48,7 @@ func New(db database.Service, secret string) *Server {
 			})
 
             r.Route("/projects", func(r chi.Router) {
+                r.Get("/", handleErrors(s.GetProjects))
                 r.Post("/", handleErrors(s.CreateProject))
             })
 		})

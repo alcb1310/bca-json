@@ -86,3 +86,26 @@ func (s *Server) CreateProject(w http.ResponseWriter, r *http.Request) error {
 	w.WriteHeader(http.StatusCreated)
 	return json.NewEncoder(w).Encode(response)
 }
+
+func (s *Server) GetProjects(w http.ResponseWriter, r *http.Request) error {
+    _, claims, _ := jwtauth.FromContext(r.Context())
+    if claims == nil {
+        return &types.BCAError{
+            Code:    http.StatusUnauthorized,
+            Message: errors.New("Unauthorized"),
+        }
+    }
+
+    companyUUID := uuid.MustParse(claims["company"].(string))
+
+    responseProjects, err := s.DB.GetProjects(companyUUID)
+    if err != nil {
+        return &types.BCAError{
+            Code:    http.StatusInternalServerError,
+            Message: err,
+        }
+    }
+
+    w.WriteHeader(http.StatusOK)
+    return json.NewEncoder(w).Encode(responseProjects)
+}

@@ -96,6 +96,22 @@ var _ = Describe("Projects", Ordered, func() {
 			token = tokenResponse.Token
 		})
 
+        It("should get all the projects", func() {
+            req, err := http.NewRequest("GET", "/api/v2/bca/projects", nil)
+            req.Header.Set("Content-Type", "application/json")
+            req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+            Expect(err).To(BeNil())
+
+            rr := httptest.NewRecorder()
+            httpServer.Server.ServeHTTP(rr, req)
+            Expect(rr.Code).To(Equal(http.StatusOK))
+
+            var projectsResponse []types.Project
+            err = json.Unmarshal(rr.Body.Bytes(), &projectsResponse)
+            Expect(err).To(BeNil())
+            Expect(len(projectsResponse)).To(Equal(3))
+        })
+
 		It("should create a project", func() {
 			var buf bytes.Buffer
 			data := make(map[string]interface{})
