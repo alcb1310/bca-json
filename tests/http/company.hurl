@@ -1,4 +1,4 @@
-POST http://localhost:8081/api/v2/companies
+POST {{HOST}}/api/v2/companies
 Content-Type: application/json
 
 {
