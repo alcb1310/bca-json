@@ -27,6 +27,11 @@ type Service interface {
     CreateUser(user types.CreateUser) (types.User, error)
     DeleteUser(id, companyID uuid.UUID) error
     UpdateUser(user types.CreateUser) error
+
+    // Project methods
+    GetProjects(companyID uuid.UUID) ([]types.Project, error)
+    GetProjectByID(id, companyID uuid.UUID) (types.Project, error)
+    CreateProject(project types.Project) (types.Project, error)
 }
 
 type service struct {
